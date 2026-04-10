@@ -81,6 +81,24 @@ function ArrowRight() {
   );
 }
 
+function IconWrap({
+  children,
+  className,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div className={`flex h-10 w-10 items-center justify-center rounded-[8px] ${className ?? ""}`} style={style}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className="h-5 w-5">
+        {children}
+      </svg>
+    </div>
+  );
+}
+
 function StarRow() {
   return (
     <div className="flex items-center gap-1 text-[#FFC107]">
@@ -110,13 +128,67 @@ function SubjectCard({
   subtitle: string;
   color: string;
 }) {
+  const icon =
+    title === "Mathematics" ? (
+      <>
+        <path d="M7 7h10" />
+        <path d="M12 4v6" />
+        <path d="m8 15 8 0" />
+        <path d="m9 18 6-6" />
+      </>
+    ) : title === "English Language" || title === "English" ? (
+      <>
+        <path d="M7 5h10v14H7z" />
+        <path d="M10 9h4" />
+        <path d="M10 13h4" />
+      </>
+    ) : title === "Science" ? (
+      <>
+        <path d="M9 4v5l-4 7a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 16l-4-7V4" />
+        <path d="M9 9h6" />
+      </>
+    ) : title === "Biology" ? (
+      <>
+        <path d="M8 15c4-1 6-4 8-8 1 6-2 11-8 12-2 0-4-2-4-4 0-3 2-5 4-5" />
+        <path d="M10 11c1 1 2 2 3 4" />
+      </>
+    ) : title === "Chemistry" ? (
+      <>
+        <path d="M10 3v6l-5 8a2 2 0 0 0 1.7 3h10.6A2 2 0 0 0 19 17l-5-8V3" />
+        <path d="M9 12h6" />
+      </>
+    ) : title === "Physics" ? (
+      <>
+        <circle cx="12" cy="12" r="2" />
+        <path d="M12 5c3.9 0 7 3.1 7 7" />
+        <path d="M5 12c0 3.9 3.1 7 7 7" />
+        <path d="M7.8 7.8A9 9 0 0 1 18.2 18.2" />
+      </>
+    ) : title === "Business Studies" ? (
+      <>
+        <path d="M6 18V8" />
+        <path d="M12 18V5" />
+        <path d="M18 18v-8" />
+      </>
+    ) : title === "Economics" ? (
+      <>
+        <path d="M6 16c1.2 1.3 2.7 2 4.5 2 3.6 0 4-5 7.5-5 1.1 0 2.1.3 3 .9" />
+        <path d="M6 8c1.2-1.3 2.7-2 4.5-2 3.6 0 4 5 7.5 5 1.1 0 2.1-.3 3-.9" />
+      </>
+    ) : (
+      <>
+        <circle cx="12" cy="8" r="2.5" />
+        <path d="M7 19v-1a5 5 0 0 1 10 0v1" />
+      </>
+    );
+
   return (
     <div
       className="rounded-[10px] px-[18px] py-[17px] text-white shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
       style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)` }}
     >
       <div className="flex items-start gap-3">
-        <div className="h-10 w-10 rounded-[8px] bg-white/18" />
+        <IconWrap className="bg-white/18 text-white">{icon}</IconWrap>
         <div>
           <p className="text-[15px] font-bold leading-5">{title}</p>
           <p className="mt-1 text-[12px] leading-[1.35] text-white/92">{subtitle}</p>
@@ -196,7 +268,11 @@ export function HomepageCloneRefined() {
 
         <div className="mt-10">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-[8px] bg-[#365bb2]" />
+            <IconWrap className="bg-[#365bb2] text-white">
+              <path d="M7 6h10v12H7z" />
+              <path d="M9.5 10h5" />
+              <path d="M9.5 13h5" />
+            </IconWrap>
             <h3 className="text-[20px] font-bold text-[#1c2744]">Primary</h3>
           </div>
           <p className="mt-5 text-[13px] text-[#3f5da8]">Ages 3-11 · Building the Foundation</p>
@@ -231,7 +307,10 @@ export function HomepageCloneRefined() {
 
         <div className="mt-14">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-[8px] bg-[#365bb2]" />
+            <IconWrap className="bg-[#365bb2] text-white">
+              <path d="M5 9 12 5l7 4-7 4-7-4Z" />
+              <path d="M7 11.5V15c0 .9 2.2 2 5 2s5-1.1 5-2v-3.5" />
+            </IconWrap>
             <h3 className="text-[20px] font-bold text-[#1c2744]">Secondary</h3>
           </div>
           <p className="mt-5 text-[13px] text-[#3f5da8]">Ages 11-18</p>
@@ -273,7 +352,51 @@ export function HomepageCloneRefined() {
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {enrichmentCards.map(([title, subtitle, color]) => (
               <div key={title} className="rounded-[16px] border border-[#edf1f7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
-                <div className="mb-5 h-11 w-11 rounded-[10px]" style={{ backgroundColor: `${color}1f`, borderLeft: `3px solid ${color}` }} />
+                <div className="mb-5">
+                  <IconWrap
+                    className="text-[#1c2744]"
+                    style={{ backgroundColor: `${color}1f`, borderLeft: `3px solid ${color}` }}
+                  >
+                    {title === "CAT Prep" ? (
+                      <>
+                        <path d="M5 7h14" />
+                        <path d="M5 12h14" />
+                        <path d="M5 17h8" />
+                      </>
+                    ) : title === "Chess Mastery" ? (
+                      <>
+                        <path d="M10 6a2 2 0 1 1 4 0c0 1-1 1.8-1 2.5S14 10 15 10v2H9v-2c1 0 2-.5 2-1.5S10 7 10 6Z" />
+                        <path d="M8 18h8" />
+                        <path d="M9 12h6l1 6H8l1-6Z" />
+                      </>
+                    ) : title === "7+/11+ Entrance Prep" ? (
+                      <>
+                        <path d="M7 5h10v14H7z" />
+                        <path d="M9 9h6" />
+                        <path d="M9 13h4" />
+                      </>
+                    ) : title === "Financial Literacy" ? (
+                      <>
+                        <circle cx="12" cy="12" r="7" />
+                        <path d="M12 8v8" />
+                        <path d="M9.5 10.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.5-1 1.5-2.5 1.5-2.5.6-2.5 1.5S10.5 15 12 15s2.5-.5 2.5-1.5" />
+                      </>
+                    ) : title === "AI Literacy" ? (
+                      <>
+                        <rect x="7" y="7" width="10" height="10" rx="2" />
+                        <path d="M12 3v2" />
+                        <path d="M12 19v2" />
+                        <path d="M3 12h2" />
+                        <path d="M19 12h2" />
+                      </>
+                    ) : (
+                      <>
+                        <circle cx="12" cy="8" r="2.5" />
+                        <path d="M7 19v-1a5 5 0 0 1 10 0v1" />
+                      </>
+                    )}
+                  </IconWrap>
+                </div>
                 <p className="text-[17px] font-bold text-[#1c2744]">{title}</p>
                 <p className="mt-4 text-[15px] leading-[1.65] text-[#4965b2]">{subtitle}</p>
               </div>
