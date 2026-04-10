@@ -24,7 +24,7 @@ export default function RootLayout({
           <link key={href} rel="stylesheet" href={href} />
         ))}
       </head>
-      <body className="min-h-full bg-white text-navy-900">
+      <body className="min-h-full bg-white text-navy-900" suppressHydrationWarning>
         <SiteHeaderRefined />
         <div className="flex min-h-screen flex-col pt-[64px] md:pt-[96px]">
           <div className="flex-1">{children}</div>
