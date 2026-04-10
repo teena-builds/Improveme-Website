@@ -1,0 +1,348 @@
+import Image from "next/image";
+import Link from "next/link";
+
+const schoolTicker =
+  "Nord Anglia School · Dubai College · Jumeirah College · Repton Dubai · North London Collegiate School · Jumeirah English Speaking School · Kings Dubai · Royal Grammar School Guildford Dubai · GEMS Jumeirah Primary School · Dubai American Academy · Dubai International Academy Al Barsha · Dubai English Speaking College · Brighton College Dubai · Dubai British School · Jebel Ali School · Repton School Dubai FZ-LLC · The English College Dubai · Safa Community School · GEMS World Academy · Al Safa British School ·";
+
+const primaryCards = [
+  ["Mathematics", "Number & problem-solving", "#4A6FD4"],
+  ["English Language", "Reading, writing & comprehension", "#E8732A"],
+  ["Science", "Natural world & scientific enquiry", "#2EAE6B"],
+];
+
+const secondaryCards = [
+  ["Mathematics", "Algebra to calculus", "#4A6FD4"],
+  ["English", "Essay technique & analysis", "#E8732A"],
+  ["Science", "Natural world & scientific enquiry", "#2EAE6B"],
+  ["Biology", "Cell biology to ecology", "#1D9060"],
+  ["Chemistry", "Organic, inorganic & physical", "#8B45B5"],
+  ["Physics", "Mechanics, electricity & waves", "#29A8C4"],
+  ["Business Studies", "Case studies & exam technique", "#D4541A"],
+  ["Economics", "Micro, macro & data analysis", "#1A7A6B"],
+  ["Psychology", "Research methods & approaches", "#C42B4A"],
+];
+
+const enrichmentCards = [
+  ["CAT Prep", "Preparation for CAT4 cognitive ability tests (Ages 7–15)", "#7C3AED"],
+  ["Chess Mastery", "Developing logic, strategy, and focus", "#F59E0B"],
+  ["7+/11+ Entrance Prep", "Structured preparation for UK and Dubai school entrance exams", "#4F46E5"],
+  ["Financial Literacy", "Practical money skills and economic awareness", "#10B981"],
+  ["AI Literacy", "Understanding AI tools and thinking critically about technology", "#3B82F6"],
+  ["Educational Counselling", "School entrance, subject selection & university applications", "#F43F5E"],
+];
+
+const resultsRows = [
+  ["01", "Small groups, not classrooms", "Our sessions run in small groups of 3–6 students. Every child gets direct attention, can ask questions freely, and never gets lost at the back of a room."],
+  ["02", "We reverse-engineer the concept", "When a child is stuck, we don’t repeat the same explanation louder. We break the concept down from the bottom up — finding exactly where understanding broke down and rebuilding from there."],
+  ["03", "Weekly sessions with practice papers and worksheets", "Consistency matters. Weekly sessions, structured worksheets, and past paper practice build the muscle memory that exams require. We don’t cram — we build."],
+  ["04", "Progress reports back to parents", "You never have to guess whether it’s working. We send regular progress reports so you know exactly where your child is, what’s improving, and what needs more work."],
+];
+
+const reviewCards = [
+  ["KOMAL KAPOOR", "Physics & Further Maths", "I’ve been at Improve ME for 3 years now and I’ve seen significant improvement in my grades! I’m currently taking physics and further maths here, the teachers are super helpful and explain things clearly. And they give tons of resources."],
+  ["ARON KELLY", "Jumeirah College — 5 Subjects", "Coming from JC, this institute has helped me achieve top marks across all subjects. I have been able to improve general knowledge and develop a better understanding of every subject I have taken — English, Maths, and 3 Sciences."],
+  ["NAZIA HASSAN", "Parent Review", "Improve ME has helped my boys so much — I honestly wish I had known about it sooner! I feel like I wasted so much time and money on home tutors, with little to no progress. Since joining Improve ME, the difference has been remarkable. They actually look forward to coming, which says it all."],
+];
+
+function ArrowRight() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  );
+}
+
+function SubjectCard({
+  title,
+  subtitle,
+  color,
+}: {
+  title: string;
+  subtitle: string;
+  color: string;
+}) {
+  return (
+    <div
+      className="rounded-[12px] px-4 py-4 text-white shadow-[0_12px_28px_rgba(15,23,42,0.08)] md:px-5 md:py-[18px]"
+      style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)` }}
+    >
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 rounded-[8px] bg-white/18" />
+        <div>
+          <p className="text-[15px] font-bold leading-5">{title}</p>
+          <p className="mt-1 text-[11px] leading-4 text-white/92 md:text-[12px]">{subtitle}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SectionEyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-3">
+      <span className="mb-2 block h-[3px] w-9 rounded-full bg-[#FFC107]" />
+      <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#FFC107]">{children}</p>
+    </div>
+  );
+}
+
+export function HomepageClone() {
+  return (
+    <main className="min-h-screen bg-white">
+      <section className="relative min-h-[595px] overflow-hidden pt-1">
+        <Image src="/ref/overlay_image.webp" alt="" fill priority className="object-cover object-center" />
+        <div className="absolute inset-0 bg-black/38 backdrop-blur-[2px]" />
+        <div className="relative mx-auto flex max-w-[1140px] items-center gap-6 px-4 pb-10 pt-[38px] sm:px-6 lg:px-8">
+          <div className="w-full max-w-[500px] rounded-[22px] border border-white/10 bg-[rgba(36,41,58,0.48)] px-8 py-8 shadow-[0_16px_45px_rgba(0,0,0,0.28)] backdrop-blur-[8px]">
+            <h1 className="max-w-[390px] text-[33px] font-bold leading-[1.03] tracking-[-0.04em] text-white md:text-[58px]">
+              Dubai&apos;s Top Tutoring Centre — Every Curriculum from Ages 3 to 18
+            </h1>
+            <p className="mt-5 max-w-[420px] text-[16px] leading-[1.55] text-white/92 md:text-[18px]">
+              From <Link className="underline" href="/curriculum/primary/">Primary</Link> through to{" "}
+              <Link className="underline" href="/curriculum/secondary/gcse/">GCSE</Link>,{" "}
+              <Link className="underline" href="/curriculum/secondary/igcse/">IGCSE</Link>,{" "}
+              <Link className="underline" href="/curriculum/secondary/a-level/">A-Level</Link>,{" "}
+              <Link className="underline" href="/curriculum/secondary/ib/">IB Diploma</Link>,{" "}
+              <Link className="underline" href="/curriculum/secondary/myp/">MYP</Link>, and international curricula — we support
+              students aged 3 to 18 across every stage of their education. Since 2010, we&apos;ve helped 1,000+ students from
+              30+ Dubai schools achieve stronger results.
+            </p>
+            <div className="mt-7 flex items-center gap-4">
+              <Link
+                href="/contact/#booking-form"
+                className="inline-flex items-center gap-2 rounded-full bg-[#FFC107] px-7 py-[14px] text-[15px] font-semibold text-black transition hover:bg-[#f0b400]"
+              >
+                Book Free Assessment
+                <ArrowRight />
+              </Link>
+              <Link href="/courses/" className="text-[15px] font-medium text-white/90 transition hover:text-white">
+                Explore Courses
+              </Link>
+            </div>
+            <div className="mt-6 w-fit border-l-[4px] border-[#FFC107] bg-white px-4 py-3 shadow-[0_8px_25px_rgba(0,0,0,0.08)]">
+              <p className="text-[14px] font-semibold leading-5 text-[#132345]">KHDA-approved · Small groups (a maximum of six students)</p>
+              <p className="mt-1 text-[12px] font-medium leading-4 text-[#35508f]">One consistent approach from age 3 to 18</p>
+            </div>
+          </div>
+          <div className="hidden flex-1 justify-end lg:flex">
+            <div className="relative h-[402px] w-[420px] overflow-hidden rounded-[18px] shadow-[0_18px_55px_rgba(0,0,0,0.26)]">
+              <Image src="/ref/images/hero-poster.webp" alt="Improve ME Institute classroom" fill className="object-cover object-center" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="overflow-hidden bg-[#002D62] py-[11px]">
+        <div className="animate-marquee flex w-max whitespace-nowrap">
+          <span className="px-4 text-[12px] font-medium tracking-[0.01em] text-white">{schoolTicker}</span>
+          <span className="px-4 text-[12px] font-medium tracking-[0.01em] text-white">{schoolTicker}</span>
+        </div>
+      </div>
+
+      <section className="mx-auto max-w-[1140px] px-4 pb-8 pt-[70px] sm:px-6 lg:px-8">
+        <SectionEyebrow>WHAT WE TEACH</SectionEyebrow>
+        <h2 className="text-[50px] font-bold tracking-[-0.04em] text-[#1c2744]">A full academic journey, ages 3 to 18</h2>
+
+        <div className="mt-10">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-[8px] bg-[#365bb2]" />
+            <h3 className="text-[20px] font-bold text-[#1c2744]">Primary</h3>
+          </div>
+          <p className="mt-5 text-[13px] text-[#3f5da8]">Ages 3–11 · Building the Foundation</p>
+          <p className="mt-4 max-w-[900px] text-[16px] leading-[1.7] text-[#3250a3]">
+            Strong foundations in Maths, English, and Science across EYFS, Key Stage 1, and Key Stage 2. Each session is matched to your child&apos;s year group and school curriculum. 7+ and 11+ entrance prep available.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {["EYFS (Ages 3–5)", "Key Stage 1 (Ages 5–7)", "Key Stage 2 (Ages 7–11)"].map((item, index) => (
+              <span
+                key={item}
+                className={`rounded-full border px-3 py-1 text-[13px] ${
+                  index === 0 ? "border-[#f3c67b] bg-[#fff1dc] text-[#ef9c00]" : index === 1 ? "border-[#f0b5a7] bg-[#fff0ec] text-[#d9694c]" : "border-[#9dc1d3] bg-[#edf8fe] text-[#4c86a6]"
+                }`}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {primaryCards.map(([title, subtitle, color]) => (
+              <SubjectCard key={title} title={title} subtitle={subtitle} color={color} />
+            ))}
+          </div>
+          <Link href="/curriculum/primary/" className="mt-5 inline-flex items-center gap-1 text-[17px] text-[#1c2744]">
+            View Primary Curriculum <ArrowRight />
+          </Link>
+        </div>
+
+        <div className="mt-14">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-[8px] bg-[#365bb2]" />
+            <h3 className="text-[20px] font-bold text-[#1c2744]">Secondary</h3>
+          </div>
+          <p className="mt-5 text-[13px] text-[#3f5da8]">Ages 11–18</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {["Years 7–9 (KS3)", "MYP (Ages 11–16)", "GCSE/IGCSE (Ages 14–16)", "A-Levels/IB (Ages 16–18)"].map((item, index) => (
+              <span
+                key={item}
+                className={`rounded-full border px-3 py-1 text-[13px] ${
+                  index === 0 ? "border-[#9eb8df] bg-[#edf4ff] text-[#3f72b7]" : index === 1 ? "border-[#f3c58e] bg-[#fff1df] text-[#e58f3f]" : index === 2 ? "border-[#99c7c1] bg-[#e8f8f2] text-[#2f8b83]" : "border-[#e1a99d] bg-[#fff0ed] text-[#c86449]"
+                }`}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+          <p className="mt-5 max-w-[930px] text-[16px] leading-[1.7] text-[#3250a3]">
+            Key Stage 3 to A-Level and IB. Every session aligns with your child&apos;s exam board and school timetable. Our tutors know what examiners expect — and teach accordingly.
+          </p>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {secondaryCards.map(([title, subtitle, color]) => (
+              <SubjectCard key={title} title={title} subtitle={subtitle} color={color} />
+            ))}
+          </div>
+          <Link href="/curriculum/secondary/" className="mt-7 inline-flex items-center gap-1 text-[17px] text-[#1c2744]">
+            View Secondary Curriculum <ArrowRight />
+          </Link>
+        </div>
+
+        <div className="mt-12 rounded-[18px] bg-[#fcfcfc] px-8 py-11 shadow-[0_14px_50px_rgba(15,23,42,0.08)]">
+          <SectionEyebrow>ENRICHMENT &amp; FUTURE SKILLS</SectionEyebrow>
+          <h3 className="text-[46px] font-bold tracking-[-0.04em] text-[#1c2744]">Building well-rounded learners</h3>
+          <p className="mt-2 text-[17px] text-[#4965b2]">Alongside the academic programme.</p>
+          <div className="mt-7 grid gap-4 md:grid-cols-3">
+            {enrichmentCards.map(([title, subtitle, color]) => (
+              <div key={title} className="rounded-[16px] border border-[#edf1f7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
+                <div className="mb-5 h-11 w-11 rounded-[10px]" style={{ backgroundColor: `${color}1f`, borderLeft: `3px solid ${color}` }} />
+                <p className="text-[17px] font-bold text-[#1c2744]">{title}</p>
+                <p className="mt-4 text-[15px] leading-[1.65] text-[#4965b2]">{subtitle}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-[12px] italic text-[#6079bb]">These programmes run alongside our academic courses for a more complete education.</p>
+          <div className="mt-6 rounded-[16px] border-l-[3px] border-[#08beb1] bg-[linear-gradient(90deg,#f1ffff_0%,#f4feff_100%)] px-6 py-6 shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-[760px]">
+                <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-[#0cb5a5]">HOME EDUCATION</p>
+                <h4 className="mt-2 text-[19px] font-bold text-[#1c2744]">A Structured Learning Environment for Home-Schooled Students</h4>
+                <p className="mt-3 text-[15px] leading-[1.7] text-[#4965b2]">
+                  Our morning programme gives home-schooled students a professional, centre-based space to learn — keeping them on track, helping them get ahead, and ensuring their education is structured, consistent, and tailored to their needs. Whether they follow the UK National Curriculum, IB, or a custom programme, we work around their schedule and learning goals.
+                </p>
+              </div>
+              <Link href="/courses/home-education/" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FFC107] px-7 py-[14px] text-[15px] font-semibold text-black transition hover:bg-[#f0b400]">
+                Learn More
+                <ArrowRight />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <Link href="/courses/" className="mt-12 inline-flex items-center gap-2 rounded-full bg-[#FFC107] px-7 py-[14px] text-[16px] font-semibold text-black transition hover:bg-[#f0b400]">
+          Explore All Courses
+          <ArrowRight />
+        </Link>
+      </section>
+
+      <section className="bg-[#fbfbfc] py-[98px]">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
+          <SectionEyebrow>OUR APPROACH</SectionEyebrow>
+          <h2 className="text-[52px] font-bold tracking-[-0.04em] text-[#1c2744]">How We Actually Get Results</h2>
+          <div className="mt-10 overflow-hidden rounded-[14px] border border-[#ecedf2] bg-white">
+            {resultsRows.map(([number, title, copy]) => (
+              <div key={number} className="grid grid-cols-[92px_1fr] border-b border-[#eef0f4] px-7 py-7 last:border-b-0 md:grid-cols-[96px_1fr]">
+                <div className="text-[58px] font-bold leading-none tracking-[-0.05em] text-[#d8dfed]">{number}</div>
+                <div className="pt-1">
+                  <h3 className="text-[18px] font-bold text-[#1c2744]">{title}</h3>
+                  <p className="mt-3 max-w-[820px] text-[16px] leading-[1.7] text-[#4863b3]">{copy}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Link href="/about/" className="mt-8 inline-flex items-center gap-2 text-[17px] text-[#1c2744]">
+            Learn more about us <ArrowRight />
+          </Link>
+        </div>
+      </section>
+
+      <section className="bg-[#f0f4ff] py-[88px]">
+        <div className="mx-auto max-w-[1140px] px-4 text-center sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[680px]">
+            <span className="mx-auto mb-2 block h-[3px] w-8 rounded-full bg-[#FFC107]" />
+            <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#FFC107]">TRUSTED BY FAMILIES</p>
+            <h2 className="mt-3 text-[50px] font-bold tracking-[-0.04em] text-[#1c2744]">What Parents Say</h2>
+            <div className="mx-auto mt-6 flex w-fit items-center gap-4 rounded-[14px] border border-[#e4e7ef] bg-white px-6 py-5 shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
+              <div className="text-left">
+                <div className="flex items-center gap-2">
+                  <span className="text-[38px] font-bold leading-none text-[#1c2744]">4.9</span>
+                  <span className="text-[24px] leading-none text-[#FFC107]">★★★★★</span>
+                </div>
+                <p className="mt-1 text-left text-[14px] font-medium text-[#4965b2]">Google Rating</p>
+                <p className="mt-1 text-left text-[12px] text-[#6b7eb4]">Based on 206+ reviews</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 flex items-center justify-between gap-4">
+            <button className="hidden h-10 w-10 rounded-full border border-[#e4e7ef] bg-white text-[#1c2744] shadow-[0_6px_16px_rgba(15,23,42,0.08)] md:flex md:items-center md:justify-center">‹</button>
+            <div className="grid flex-1 gap-4 md:grid-cols-3">
+              {reviewCards.map(([name, tag, quote]) => (
+                <div key={name} className="flex h-[380px] flex-col rounded-[16px] border border-[#e5e8f0] bg-white px-5 py-5 text-left shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
+                  <div className="text-[22px] text-[#FFC107]">★★★★★</div>
+                  <p className="mt-4 flex-1 text-[15px] italic leading-[1.78] text-[#5a6da2]">{quote}</p>
+                  <div className="mt-6 border-t border-[#eceef4] pt-4">
+                    <p className="text-[17px] font-bold uppercase tracking-[0.02em] text-[#1c2744]">{name}</p>
+                    <p className="mt-2 text-[14px] text-[#7d8fbe]">{tag}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="hidden h-10 w-10 rounded-full border border-[#e4e7ef] bg-white text-[#1c2744] shadow-[0_6px_16px_rgba(15,23,42,0.08)] md:flex md:items-center md:justify-center">›</button>
+          </div>
+          <div className="mt-6 flex justify-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#dbe2f0]" />
+            <span className="h-2 w-2 rounded-full bg-[#1c2744]" />
+            <span className="h-2 w-2 rounded-full bg-[#dbe2f0]" />
+            <span className="h-2 w-2 rounded-full bg-[#dbe2f0]" />
+          </div>
+          <a
+            href="https://www.google.com/maps/search/Improve+ME+Institute+Dubai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-7 inline-flex items-center gap-2 text-[15px] font-medium text-[#1c2744]"
+          >
+            See all our Google reviews <ArrowRight />
+          </a>
+        </div>
+      </section>
+
+      <section className="bg-[#002D62] py-[76px]">
+        <div className="mx-auto grid max-w-[1140px] gap-10 px-4 sm:px-6 lg:grid-cols-[300px_1fr] lg:px-8">
+          <div className="pt-2 text-white">
+            <SectionEyebrow>GET STARTED</SectionEyebrow>
+            <h2 className="max-w-[240px] text-[52px] font-bold leading-[1.02] tracking-[-0.04em] text-white">Book Your Free Assessment</h2>
+            <p className="mt-6 max-w-[280px] text-[16px] leading-[1.72] text-white/92">
+              Our team will assess your child&apos;s current level and recommend the right group and tutor. There&apos;s no cost and no obligation — and we typically respond within two hours. We&apos;re also exploring a self-service assessment calendar so you can pick a slot directly; for now, submit the form and we&apos;ll confirm a time quickly.
+            </p>
+            <ul className="mt-7 space-y-4 text-[15px] text-white/95">
+              <li>Free diagnostic assessment</li>
+              <li>No obligation to enrol</li>
+              <li>Response within two hours</li>
+            </ul>
+            <p className="mt-7 text-[14px] text-white/80">Trusted by families from 30+ top Dubai schools</p>
+          </div>
+
+          <div className="overflow-hidden rounded-[10px] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+            <div className="border-b border-[#edf0f5] px-6 py-5 text-center">
+              <h3 className="text-[28px] font-bold tracking-[-0.03em] text-[#2b3552]">Improve ME Institute Enquiry Form</h3>
+            </div>
+            <iframe
+              src="https://forms.improvemeinstitute.com/improvemeinstitute/form/FreeTrial/formperma/qOW8nB2Vw1j45OH2X8_8QQLUyV61dQ4hJ2Y8x-pFyig?zf_rszfm=1"
+              title="Improve ME Institute Enquiry Form"
+              className="h-[760px] w-full"
+            />
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
