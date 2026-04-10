@@ -138,15 +138,15 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
 export function HomepageCloneRefined() {
   return (
     <main className="min-h-screen bg-white">
-      <section className="relative min-h-[596px] overflow-hidden pt-[2px]">
+      <section className="relative min-h-[90vh] overflow-hidden pt-[2px]">
         <Image src="/ref/overlay_image.webp" alt="" fill priority className="object-cover object-center" />
-        <div className="absolute inset-0 bg-[rgba(19,21,29,0.42)] backdrop-blur-[2px]" />
-        <div className="relative mx-auto flex max-w-[80rem] items-center gap-7 px-4 pb-[38px] pt-[39px] sm:px-6 lg:px-8">
-          <div className="w-full max-w-[510px] rounded-[22px] border border-white/10 bg-[rgba(34,38,56,0.50)] px-8 py-8 shadow-[0_16px_45px_rgba(0,0,0,0.28)] backdrop-blur-[8px] md:px-[34px] md:py-[34px]">
-            <h1 className="max-w-[396px] text-[33px] font-bold leading-[1.02] tracking-[-0.045em] text-white md:text-[58px]">
+       <div className="absolute inset-0 bg-black/25 backdrop-blur-[2px]"></div>
+       <div className="relative z-20 section-container min-h-[90vh] flex flex-col lg:flex-row lg:items-center">
+          <div className="w-full flex-1 rounded-[22px] border border-white/10 bg-[rgba(34,38,56,0.50)] px-8 py-8 shadow-[0_16px_45px_rgba(0,0,0,0.28)] backdrop-blur-[8px] md:px-[34px] md:py-[34px]">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl text-white font-bold leading-[1.05] tracking-tighter text-left max-w-4xl">
               Dubai&apos;s Top Tutoring Centre - Every Curriculum from Ages 3 to 18
             </h1>
-            <p className="mt-5 max-w-[430px] text-[16px] leading-[1.58] text-white/92 md:text-[18px]">
+            <p className="mt-6 max-w-[430px] text-[16px] leading-relaxed text-white/92 md:text-[18px]">
               From <Link className="underline" href="/curriculum/primary/">Primary</Link> through to{" "}
               <Link className="underline" href="/curriculum/secondary/gcse/">GCSE</Link>,{" "}
               <Link className="underline" href="/curriculum/secondary/igcse/">IGCSE</Link>,{" "}
@@ -159,7 +159,7 @@ export function HomepageCloneRefined() {
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link
                 href="/contact/#booking-form"
-                className="inline-flex items-center gap-2 rounded-full bg-[#FFC107] px-7 py-[14px] text-[15px] font-semibold text-black transition hover:bg-[#f0b400]"
+                className="inline-flex items-center gap-2 rounded-full px-8 py-4 bg-[#FFC107] text-black font-semibold hover:scale-[1.02] transition"
               >
                 Book Free Assessment
                 <ArrowRight />
@@ -424,7 +424,7 @@ export function HomepageCloneRefined() {
         
         <iframe
           src="https://forms.improvemeinstitute.com/improvemeinstitute/form/FreeTrial/formperma/qOW8nB2Vw1j45OH2X8_8QQLUyV61dQ4hJ2Y8x-pFyig?zf_rszfm=1"
-          className="w-full h-[1195px] rounded-lg bg-white"
+          className="w-full h-[1196px] rounded-lg bg-white"
         ></iframe>
       </div>
 
