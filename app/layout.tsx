@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { SiteFooterFixed } from "../components/site-footer-fixed";
-import { SiteHeader } from "../components/site-header";
+import { SiteFooterRefined } from "../components/site-footer-refined";
+import { SiteHeaderRefined } from "../components/site-header-refined";
 import { referenceStylesheets } from "../lib/site";
 
 export const metadata: Metadata = {
@@ -25,10 +25,10 @@ export default function RootLayout({
         ))}
       </head>
       <body className="min-h-full bg-white text-navy-900">
-        <SiteHeader />
+        <SiteHeaderRefined />
         <div className="flex min-h-screen flex-col pt-[64px] md:pt-[96px]">
           <div className="flex-1">{children}</div>
-          <SiteFooterFixed />
+          <SiteFooterRefined />
         </div>
       </body>
     </html>

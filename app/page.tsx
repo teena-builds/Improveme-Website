@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HomepageClone } from "../components/homepage-clone";
+import { HomepageCloneRefined } from "../components/homepage-clone-refined";
 import { getPageByRoute } from "../lib/site";
 
 const homePage = getPageByRoute("/");
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HomepageClone />;
+  return <HomepageCloneRefined />;
 }
