@@ -13,6 +13,31 @@ const headingClasses = {
 
 const htmlPattern = /<\/?[a-z][\s\S]*>/i;
 
+const slugifyHeading = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/&[a-z0-9#]+;/g, " ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const stripInlineMarkdown = (value: string) => value.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1").replace(/[*_`>#-]/g, "").trim();
+
+const addIdsToHtmlHeadings = (html: string) =>
+  html.replace(/<h([1-6])([^>]*)>([\s\S]*?)<\/h\1>/gi, (_match, level, attributes, content) => {
+    const plainText = content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const id = slugifyHeading(plainText);
+
+    if (!id) {
+      return `<h${level}${attributes}>${content}</h${level}>`;
+    }
+
+    if (/\sid=/.test(attributes)) {
+      return `<h${level}${attributes}>${content}</h${level}>`;
+    }
+
+    return `<h${level}${attributes} id="${id}">${content}</h${level}>`;
+  });
+
 function renderInlineText(text: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   const pattern = /(\[([^\]]+)\]\((https?:\/\/[^)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*)/g;
@@ -69,8 +94,11 @@ function renderMarkdownish(body: string) {
 
     if (headingMatch) {
       const level = Math.min(headingMatch[1].length, 6) as keyof typeof headingClasses;
+      const headingText = stripInlineMarkdown(headingMatch[2].trim());
+      const headingId = slugifyHeading(headingText);
+
       return (
-        <h2 key={`section-${index}`} className={`${headingClasses[level]} font-bold leading-[1.18] tracking-[-0.03em] text-[#1c2744]`}>
+        <h2 key={`section-${index}`} id={headingId || undefined} className={`${headingClasses[level]} scroll-mt-28 font-bold leading-[1.18] tracking-[-0.03em] text-[#1c2744]`}>
           {renderInlineText(headingMatch[2].trim())}
         </h2>
       );
@@ -109,7 +137,7 @@ export function BlogRichContent({ blocks }: { blocks: BlogBlock[] }) {
               <div
                 key={block.id}
                 className="space-y-5 text-[17px] leading-[1.9] text-[#556892] [&_a]:font-semibold [&_a]:text-[#365bb2] [&_a]:underline [&_a]:decoration-[#365bb2]/35 [&_a]:underline-offset-4 [&_h1]:text-[34px] [&_h1]:font-bold [&_h1]:leading-[1.18] [&_h1]:tracking-[-0.03em] [&_h1]:text-[#1c2744] [&_h2]:text-[28px] [&_h2]:font-bold [&_h2]:leading-[1.2] [&_h2]:tracking-[-0.03em] [&_h2]:text-[#1c2744] [&_h3]:text-[24px] [&_h3]:font-bold [&_h3]:leading-[1.25] [&_h3]:tracking-[-0.02em] [&_h3]:text-[#1c2744] [&_li]:ml-6 [&_li]:list-disc [&_p]:my-0 [&_ul]:space-y-3 [&_ul]:pl-2"
-                dangerouslySetInnerHTML={{ __html: block.body }}
+                dangerouslySetInnerHTML={{ __html: addIdsToHtmlHeadings(block.body) }}
               />
             );
           }

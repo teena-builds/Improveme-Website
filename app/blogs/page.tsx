@@ -10,36 +10,44 @@ export const metadata: Metadata = {
 export default async function BlogsPage() {
   const { error, posts } = await getPublishedBlogPosts();
   const [featuredPost, ...remainingPosts] = posts;
+  const categoryPills = ["All", "Exam Prep", "Study Tips", "Curriculum", "Career Guidance"];
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#edf3fb_0%,#f8fbff_32%,#f4f7fc_100%)]">
-      <section className="relative overflow-hidden bg-[#0f2857] py-20 md:py-28">
+    <main className="min-h-screen bg-[#f4f6fa]">
+      <section className="relative overflow-hidden bg-[#002D62] pb-14 pt-20 md:pb-20 md:pt-28">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_85%_20%,rgba(255,193,7,0.22),transparent_22%),linear-gradient(135deg,#0f2857_0%,#173870_52%,#274f91_100%)]" />
-          <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-white/8 blur-3xl" />
-          <div className="absolute right-0 top-12 h-80 w-80 rounded-full bg-[#FFC107]/12 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_34%),linear-gradient(135deg,#002D62_0%,#113a7b_58%,#1b4c91_100%)]" />
         </div>
         <div className="section-container relative z-10">
-          <div className="inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#ffd76a] backdrop-blur-[6px]">
-            Improve ME Journal
-          </div>
-          <h1 className="mt-6 max-w-4xl text-[42px] font-bold leading-[1.02] tracking-[-0.06em] text-white md:text-[64px]">
-            Helpful, polished articles that look like they belong on a real editorial homepage
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FFC107]">OUR BLOGS</p>
+          <h1 className="mt-4 max-w-4xl text-[38px] font-bold leading-[1.08] tracking-[-0.05em] text-white md:text-[54px]">
+            Expert Advice for Dubai Students & Parents
           </h1>
-          <div className="mt-7 grid gap-4 md:max-w-3xl md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-            <p className="max-w-2xl text-[18px] leading-[1.85] text-white/80">
-              Your published Strapi posts now sit in a cleaner magazine-style layout with stronger visual hierarchy, softer cards, and more natural reading flow.
-            </p>
-            <div className="rounded-[18px] border border-white/12 bg-white/10 px-5 py-4 text-white/78 shadow-[0_16px_40px_rgba(0,0,0,0.16)] backdrop-blur-[8px]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#ffd76a]">Live Count</p>
-              <p className="mt-2 text-[30px] font-bold tracking-[-0.05em] text-white">{posts.length}</p>
-              <p className="text-[13px] text-white/68">Published posts</p>
-            </div>
+          <p className="mt-5 max-w-2xl text-[18px] leading-[1.75] text-white/82">
+            Study tips, curriculum guides, and exam strategies, written by educators who care.
+          </p>
+        </div>
+      </section>
+
+      <section className="border-b border-[#dfe4ee] bg-white">
+        <div className="section-container">
+          <div className="flex flex-wrap gap-2 py-5 md:gap-3">
+            {categoryPills.map((pill, index) => (
+              <button
+                key={pill}
+                type="button"
+                className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+                  index === 0 ? "bg-[#FFC107] text-[#002D62]" : "bg-[#eef2f7] text-[#667085] hover:bg-[#e4ebf5]"
+                }`}
+              >
+                {pill}
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-14 md:py-18">
+      <section className="py-10 md:py-14">
         <div className="section-container">
           {error ? (
             <div className="rounded-[28px] border border-[#d8dfeb] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(15,23,42,0.08)]">

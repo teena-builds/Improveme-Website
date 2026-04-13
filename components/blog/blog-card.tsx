@@ -29,14 +29,14 @@ type BlogCardProps = {
 export function BlogCard({ post, featured = false }: BlogCardProps) {
   return (
     <article
-      className={`group overflow-hidden rounded-[26px] border border-[#d8dfeb] bg-white shadow-[0_18px_46px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_56px_rgba(15,23,42,0.14)] ${
-        featured ? "lg:grid lg:grid-cols-[1.15fr_0.85fr]" : ""
+      className={`group overflow-hidden rounded-[24px] border border-[#d9e1ec] bg-white shadow-[0_14px_36px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.13)] ${
+        featured ? "lg:grid lg:grid-cols-[1.1fr_0.9fr]" : "h-full"
       }`}
     >
       <Link href={`/blogs/${post.slug}`} className="block">
         <div
           className={`relative overflow-hidden bg-[linear-gradient(145deg,#0f2857_0%,#264c8f_58%,#ffd15a_100%)] ${
-            featured ? "aspect-[16/11] h-full min-h-[320px] lg:aspect-auto lg:min-h-[100%]" : "aspect-[16/10]"
+            featured ? "aspect-[16/10] h-full min-h-[320px] lg:aspect-auto lg:min-h-[100%]" : "aspect-[1.38/1]"
           }`}
         >
           {post.cover ? (
@@ -55,28 +55,40 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
             </div>
           )}
 
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,18,44,0.02)_0%,rgba(7,18,44,0.18)_58%,rgba(7,18,44,0.72)_100%)]" />
-          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-            <div className="inline-flex items-center rounded-full bg-white/92 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#1c2744] shadow-[0_10px_20px_rgba(15,23,42,0.15)]">
-              Improve ME Blog
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,18,44,0.04)_0%,rgba(7,18,44,0.14)_58%,rgba(7,18,44,0.42)_100%)]" />
+          <div className="absolute left-5 top-5">
+            <div className="inline-flex items-center rounded-full bg-white/94 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1c2744] shadow-[0_10px_20px_rgba(15,23,42,0.14)]">
+              {featured ? "Featured" : "Improve ME Blog"}
             </div>
           </div>
         </div>
       </Link>
 
-      <div className={`bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] ${featured ? "px-7 py-7 md:px-8 md:py-8 lg:flex lg:flex-col lg:justify-center" : "px-6 py-6"}`}>
-        <p className="text-[13px] font-medium tracking-[-0.01em] text-[#6b7692]">{formatDate(post.publishedAt)}</p>
-        <h2 className={`mt-4 font-bold leading-[1.16] tracking-[-0.04em] text-[#1a233b] ${featured ? "text-[30px] md:text-[38px]" : "text-[22px] md:text-[24px]"}`}>
+      <div
+        className={`bg-white ${
+          featured ? "px-7 py-7 md:px-8 md:py-8 lg:flex lg:flex-col lg:justify-center" : "flex h-[280px] flex-col px-6 py-6"
+        }`}
+      >
+        <p className="text-[14px] font-medium tracking-[-0.01em] text-[#6c748a]">{formatDate(post.publishedAt)}</p>
+        <h2
+          className={`mt-4 font-bold leading-[1.22] tracking-[-0.04em] text-[#202430] ${
+            featured ? "text-[32px] md:text-[40px]" : "line-clamp-2 text-[22px] md:text-[25px]"
+          }`}
+        >
           <Link href={`/blogs/${post.slug}`} className="transition-colors hover:text-[#365bb2]">
             {post.title}
           </Link>
         </h2>
-        <p className={`mt-4 text-[#5d6884] ${featured ? "max-w-[30rem] text-[17px] leading-[1.8]" : "text-[15px] leading-[1.78]"}`}>
-          {trimExcerpt(post.excerpt, featured ? 240 : 120)}
+        <p
+          className={`mt-4 text-[#596273] ${
+            featured ? "max-w-[30rem] text-[17px] leading-[1.8]" : "line-clamp-3 text-[15px] leading-[1.85]"
+          }`}
+        >
+          {trimExcerpt(post.excerpt, featured ? 260 : 135)}
         </p>
         <Link
           href={`/blogs/${post.slug}`}
-          className="mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-[#d9e3f3] bg-[#f4f7fc] px-5 py-2.5 text-[14px] font-semibold text-[#1c2744] transition-all hover:border-[#bfd0ec] hover:bg-white hover:text-[#365bb2]"
+          className="mt-auto inline-flex w-fit items-center gap-2 pt-6 text-[15px] font-semibold text-[#1f355f] transition-colors hover:text-[#365bb2]"
         >
           Read article
           <span aria-hidden="true">&rarr;</span>
