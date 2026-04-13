@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogsPage() {
-  const posts = await getPublishedBlogPosts();
+  const { error, posts } = await getPublishedBlogPosts();
 
   return (
     <main className="min-h-screen bg-white">
@@ -31,7 +31,15 @@ export default async function BlogsPage() {
 
       <section className="bg-[#f7f9fd] py-16 md:py-20">
         <div className="section-container">
-          {posts.length ? (
+          {error ? (
+            <div className="rounded-[20px] border border-[#e7ebf2] bg-white px-8 py-10 shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
+              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#D4AF37]">BLOG TEMPORARILY UNAVAILABLE</p>
+              <h2 className="mt-3 text-[30px] font-bold tracking-[-0.04em] text-[#1c2744]">The blog CMS is not reachable right now.</h2>
+              <p className="mt-4 max-w-2xl text-[16px] leading-[1.8] text-[#5a6da2]">
+                Start the Strapi server again and this page will automatically load published posts.
+              </p>
+            </div>
+          ) : posts.length ? (
             <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {posts.map((post) => (
                 <BlogCard key={post.id} post={post} />
@@ -51,4 +59,3 @@ export default async function BlogsPage() {
     </main>
   );
 }
-

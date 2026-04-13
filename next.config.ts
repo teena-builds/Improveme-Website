@@ -6,19 +6,36 @@ const configuredOrigins = [process.env.STRAPI_URL, process.env.NEXT_PUBLIC_STRAP
   .filter((origin): origin is string => Boolean(origin))
   .map((origin) => origin.replace(/\/$/, ""));
 
-const remotePatterns = Array.from(new Set([...defaultStrapiOrigins, ...configuredOrigins]))
-  .map((origin) => {
-    try {
-      return new URL("/uploads/**", origin);
-    } catch {
-      return null;
+const strapiOrigins = Array.from(new Set([...defaultStrapiOrigins, ...configuredOrigins]));
+
+const mediaPatterns = strapiOrigins.flatMap((origin) => {
+  try {
+    const url = new URL(origin);
+    const patterns: NonNullable<NextConfig["images"]>["remotePatterns"] = [
+      {
+        protocol: url.protocol.replace(":", "") as "http" | "https",
+        hostname: url.hostname,
+        pathname: "/uploads/**",
+      },
+    ];
+
+    if (url.hostname.endsWith(".strapiapp.com")) {
+      patterns.push({
+        protocol: "https",
+        hostname: url.hostname.replace(".strapiapp.com", ".media.strapiapp.com"),
+        pathname: "/**",
+      });
     }
-  })
-  .filter((pattern): pattern is NonNullable<typeof pattern> => pattern !== null);
+
+    return patterns;
+  } catch {
+    return [];
+  }
+});
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns,
+    remotePatterns: mediaPatterns,
   },
 };
 

@@ -78,10 +78,22 @@ export type BlogPostWithContent = BlogPost & {
   blocks: BlogBlock[];
 };
 
+export type BlogPostsResult = {
+  error: boolean;
+  posts: BlogPostWithContent[];
+};
+
+export type BlogPostResult = {
+  error: boolean;
+  post: BlogPostWithContent | null;
+};
+
 const DEFAULT_STRAPI_URL = "http://127.0.0.1:1337";
 
 const getStrapiBaseUrl = () =>
   (process.env.STRAPI_URL ?? process.env.NEXT_PUBLIC_STRAPI_URL ?? DEFAULT_STRAPI_URL).replace(/\/$/, "");
+
+const getStrapiApiToken = () => process.env.STRAPI_API_TOKEN ?? process.env.NEXT_PUBLIC_STRAPI_API_TOKEN ?? "";
 
 const isRecord = (value: unknown): value is UnknownRecord =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -246,10 +258,12 @@ const normalizePost = (value: unknown): BlogPostWithContent | null => {
 };
 
 const readJson = async (path: string) => {
+  const apiToken = getStrapiApiToken();
   const response = await fetch(`${getStrapiBaseUrl()}${path}`, {
     cache: "no-store",
     headers: {
       Accept: "application/json",
+      ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
     },
   });
 
@@ -260,19 +274,37 @@ const readJson = async (path: string) => {
   return (await response.json()) as { data?: unknown };
 };
 
-export const getPublishedBlogPosts = cache(async (): Promise<BlogPostWithContent[]> => {
-  const params = new URLSearchParams();
-  params.set("status", "published");
-  params.set("sort[0]", "publishedAt:desc");
-  params.set("populate", "*");
+export const getPublishedBlogPosts = cache(async (): Promise<BlogPostsResult> => {
+  try {
+    const params = new URLSearchParams();
+    params.set("status", "published");
+    params.set("sort[0]", "publishedAt:desc");
+    params.set("populate", "*");
 
-  const payload = await readJson(`/api/articles?${params.toString()}`);
-  return flattenEntityArray(payload.data)
-    .map((entry) => normalizePost(entry))
-    .filter((entry): entry is BlogPostWithContent => entry !== null);
+    const payload = await readJson(`/api/articles?${params.toString()}`);
+    const posts = flattenEntityArray(payload.data)
+      .map((entry) => normalizePost(entry))
+      .filter((entry): entry is BlogPostWithContent => entry !== null);
+
+    return {
+      error: false,
+      posts,
+    };
+  } catch (error) {
+    console.error("Unable to load published blog posts from Strapi.", error);
+
+    return {
+      error: true,
+      posts: [],
+    };
+  }
 });
 
-export const getPublishedBlogPostBySlug = cache(async (slug: string): Promise<BlogPostWithContent | null> => {
-  const posts = await getPublishedBlogPosts();
-  return posts.find((post) => post.slug === slug) ?? null;
+export const getPublishedBlogPostBySlug = cache(async (slug: string): Promise<BlogPostResult> => {
+  const { error, posts } = await getPublishedBlogPosts();
+
+  return {
+    error,
+    post: posts.find((post) => post.slug === slug) ?? null,
+  };
 });

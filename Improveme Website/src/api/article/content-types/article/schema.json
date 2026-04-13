@@ -4,7 +4,7 @@
   "info": {
     "singularName": "article",
     "pluralName": "articles",
-    "displayName": "Article",
+    "displayName": "Blog",
     "description": "Create your blog content"
   },
   "options": {
@@ -44,15 +44,6 @@
       "relation": "manyToMany",
       "target": "api::category.category",
       "inversedBy": "Articles"
-    },
-    "blocks": {
-      "type": "dynamiczone",
-      "components": [
-        "shared.media",
-        "shared.quote",
-        "shared.rich-text",
-        "shared.slider"
-      ]
     }
   }
 }

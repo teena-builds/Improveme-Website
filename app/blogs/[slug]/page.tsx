@@ -18,7 +18,7 @@ const formatDate = (value: string) =>
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPublishedBlogPostBySlug(slug);
+  const { post } = await getPublishedBlogPostBySlug(slug);
 
   if (!post) {
     return {
@@ -34,7 +34,33 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = await getPublishedBlogPostBySlug(slug);
+  const { error, post } = await getPublishedBlogPostBySlug(slug);
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-white">
+        <section className="relative overflow-hidden bg-[#002D62] py-[72px] md:py-24">
+          <div className="absolute inset-0 opacity-75">
+            <div className="absolute -left-16 top-6 h-72 w-72 rounded-full bg-[#35508f]/45 blur-3xl" />
+            <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#FFC107]/14 blur-3xl" />
+          </div>
+          <div className="section-container relative z-10">
+            <Link href="/blogs" className="inline-flex items-center gap-2 text-[14px] font-medium text-white/74 transition-colors hover:text-white">
+              <span aria-hidden="true">&larr;</span>
+              Back to blogs
+            </Link>
+            <p className="mt-8 text-[11px] font-medium uppercase tracking-[0.22em] text-[#FFC107]">BLOG TEMPORARILY UNAVAILABLE</p>
+            <h1 className="mt-4 max-w-4xl text-[38px] font-bold leading-[1.08] tracking-[-0.05em] text-white md:text-[58px]">
+              The article service is offline right now.
+            </h1>
+            <p className="mt-6 max-w-3xl text-[18px] leading-[1.8] text-white/82">
+              Start the Strapi server again and this article page will load normally.
+            </p>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   if (!post) {
     notFound();
