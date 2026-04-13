@@ -42,10 +42,9 @@ export function BlogCard({ post }: { post: BlogPost }) {
         <p className="mt-4 text-[15px] leading-[1.75] text-[#5a6da2]">{post.excerpt || "Read the latest article from Improve ME Institute."}</p>
         <Link href={`/blogs/${post.slug}`} className="mt-6 inline-flex items-center gap-2 text-[15px] font-semibold text-[#1c2744] transition-colors hover:text-[#365bb2]">
           Read article
-          <span aria-hidden="true">→</span>
+          <span aria-hidden="true">&rarr;</span>
         </Link>
       </div>
     </article>
   );
 }
-

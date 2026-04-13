@@ -20,6 +20,17 @@ type StrapiBlockRecord = UnknownRecord & {
   title?: string | null;
 };
 
+const readString = (entry: UnknownRecord, ...keys: string[]) => {
+  for (const key of keys) {
+    const value = entry[key];
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return "";
+};
+
 export type BlogMedia = {
   alt: string;
   caption?: string | null;
@@ -200,10 +211,23 @@ const normalizePost = (value: unknown): BlogPostWithContent | null => {
     return null;
   }
 
-  const title = typeof entry.title === "string" ? entry.title.trim() : "";
-  const slug = typeof entry.slug === "string" ? entry.slug.trim() : "";
+  const title = readString(entry, "title", "Title");
+  const slug = readString(entry, "slug", "Slug");
+  const description = readString(entry, "description", "Description");
   const publishedAt = typeof entry.publishedAt === "string" ? entry.publishedAt : "";
-  const blocks = normalizeBlocks(entry.blocks);
+  const normalizedBlocks = normalizeBlocks(entry.blocks ?? entry.Blocks);
+  const blocks =
+    normalizedBlocks.length > 0
+      ? normalizedBlocks
+      : description
+        ? [
+            {
+              type: "rich-text" as const,
+              body: description,
+              id: `${entry.id ?? entry.documentId ?? slug}-description`,
+            },
+          ]
+        : [];
 
   if (!title || !slug || !publishedAt) {
     return null;
@@ -211,9 +235,9 @@ const normalizePost = (value: unknown): BlogPostWithContent | null => {
 
   return {
     blocks,
-    cover: normalizeMedia(entry.cover),
+    cover: normalizeMedia(entry.cover ?? entry.Cover ?? entry.image ?? entry.Image),
     documentId: typeof entry.documentId === "string" ? entry.documentId : undefined,
-    excerpt: extractExcerpt(entry.description, blocks),
+    excerpt: extractExcerpt(description, blocks),
     id: String(entry.id ?? entry.documentId ?? slug),
     publishedAt,
     slug,
@@ -236,21 +260,11 @@ const readJson = async (path: string) => {
   return (await response.json()) as { data?: unknown };
 };
 
-export const getPublishedBlogPosts = cache(async (): Promise<BlogPost[]> => {
+export const getPublishedBlogPosts = cache(async (): Promise<BlogPostWithContent[]> => {
   const params = new URLSearchParams();
   params.set("status", "published");
   params.set("sort[0]", "publishedAt:desc");
-  params.set("fields[0]", "title");
-  params.set("fields[1]", "slug");
-  params.set("fields[2]", "description");
-  params.set("fields[3]", "publishedAt");
-  params.set("populate[cover][fields][0]", "url");
-  params.set("populate[cover][fields][1]", "alternativeText");
-  params.set("populate[cover][fields][2]", "caption");
-  params.set("populate[cover][fields][3]", "width");
-  params.set("populate[cover][fields][4]", "height");
-  params.set("populate[cover][fields][5]", "mime");
-  params.set("populate[cover][fields][6]", "name");
+  params.set("populate", "*");
 
   const payload = await readJson(`/api/articles?${params.toString()}`);
   return flattenEntityArray(payload.data)
@@ -259,24 +273,6 @@ export const getPublishedBlogPosts = cache(async (): Promise<BlogPost[]> => {
 });
 
 export const getPublishedBlogPostBySlug = cache(async (slug: string): Promise<BlogPostWithContent | null> => {
-  const params = new URLSearchParams();
-  params.set("status", "published");
-  params.set("filters[slug][$eq]", slug);
-  params.set("pagination[pageSize]", "1");
-  params.set("fields[0]", "title");
-  params.set("fields[1]", "slug");
-  params.set("fields[2]", "description");
-  params.set("fields[3]", "publishedAt");
-  params.set("populate[cover][fields][0]", "url");
-  params.set("populate[cover][fields][1]", "alternativeText");
-  params.set("populate[cover][fields][2]", "caption");
-  params.set("populate[cover][fields][3]", "width");
-  params.set("populate[cover][fields][4]", "height");
-  params.set("populate[cover][fields][5]", "mime");
-  params.set("populate[cover][fields][6]", "name");
-  params.set("populate[blocks][populate]", "*");
-
-  const payload = await readJson(`/api/articles?${params.toString()}`);
-  const post = flattenEntityArray(payload.data).map((entry) => normalizePost(entry)).find((entry): entry is BlogPostWithContent => Boolean(entry));
-  return post ?? null;
+  const posts = await getPublishedBlogPosts();
+  return posts.find((post) => post.slug === slug) ?? null;
 });
