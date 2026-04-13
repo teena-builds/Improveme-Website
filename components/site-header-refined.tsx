@@ -73,7 +73,8 @@ const navLinks: Array<{ label: string; href: string; menu?: MenuGroup[] }> = [
   { label: "Our Courses", href: "/courses/", menu: coursesMenu },
   { label: "Our Curriculum", href: "/curriculum/", menu: curriculumMenu },
   { label: "About Us", href: "/about/" },
-  { label: "Blogs", href: "/blog/" },
+  { label: "Careers", href: "/careers/" },
+  { label: "Blogs", href: "/blogs/" },
   { label: "Contact", href: "/contact/" },
 ];
 

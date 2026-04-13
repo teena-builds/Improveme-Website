@@ -128,6 +128,8 @@ export function SiteFooterRefined() {
                   ["/about/", "About Us"],
                   ["/courses/", "Our Courses"],
                   ["/curriculum/", "Our Curriculum"],
+                  ["/careers/", "Careers"],
+                  ["/blogs/", "Blogs"],
                   ["/faq/", "FAQ"],
                   ["/glossary/", "Glossary"],
                   ["/contact/", "Contact Us"],
