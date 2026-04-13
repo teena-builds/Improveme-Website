@@ -10,7 +10,7 @@
     "dev": "set XDG_CONFIG_HOME=%cd%\\.xdg&& set STRAPI_TELEMETRY_DISABLED=true&& strapi develop --polling",
     "develop": "set XDG_CONFIG_HOME=%cd%\\.xdg&& set STRAPI_TELEMETRY_DISABLED=true&& strapi develop --polling",
     "seed:example": "node ./scripts/seed.js",
-    "start": "set XDG_CONFIG_HOME=%cd%\\.xdg&& set STRAPI_TELEMETRY_DISABLED=true&& strapi develop --polling",
+    "start": "set XDG_CONFIG_HOME=%cd%\\.xdg&& set STRAPI_TELEMETRY_DISABLED=true&& strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"

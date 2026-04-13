@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { BlogCard } from "@/components/blog/blog-card";
 import { getPublishedBlogPosts } from "@/lib/strapi";
 
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogsPage() {
+  await connection();
   const { error, posts } = await getPublishedBlogPosts();
   const [featuredPost, ...remainingPosts] = posts;
   const categoryPills = ["All", "Exam Prep", "Study Tips", "Curriculum", "Career Guidance"];

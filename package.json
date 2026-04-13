@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "clean": "powershell -NoProfile -Command \"if (Test-Path '.next') { Remove-Item -LiteralPath '.next' -Recurse -Force -ErrorAction SilentlyContinue }\"",
+    "build": "npm run clean && next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint app components lib next.config.ts eslint.config.mjs"
   },
   "dependencies": {
     "next": "16.2.3",

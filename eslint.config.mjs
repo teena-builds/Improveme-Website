@@ -11,6 +11,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "Improveme Website/**",
     "next-env.d.ts",
     "public/ref/**",
     "components/site-footer.tsx",
