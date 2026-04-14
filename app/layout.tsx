@@ -5,8 +5,39 @@ import { SiteHeaderRefined } from "../components/site-header-refined";
 import { referenceStylesheets } from "../lib/site";
 
 export const metadata: Metadata = {
-  title: "Improve ME Institute Clone",
-  description: "Local Next.js clone of Improve ME Institute.",
+  metadataBase: new URL("https://www.improvemeinstitute.com"),
+  title: {
+    default: "Improve ME Institute | Tutoring Centre in Dubai",
+    template: "%s | Improve ME Institute",
+  },
+  description:
+    "Improve ME Institute is a leading tutoring centre in Dubai, offering personalised tuition for students aged 3 to 18.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Improve ME Institute",
+    url: "/",
+    title: "Improve ME Institute | Tutoring Centre in Dubai",
+    description:
+      "Improve ME Institute is a leading tutoring centre in Dubai, offering personalised tuition for students aged 3 to 18.",
+    images: [
+      {
+        url: "/ref/images/hero-poster-home-v3.webp",
+        width: 1200,
+        height: 630,
+        alt: "Improve ME Institute tutoring in Dubai",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Improve ME Institute | Tutoring Centre in Dubai",
+    description:
+      "Improve ME Institute is a leading tutoring centre in Dubai, offering personalised tuition for students aged 3 to 18.",
+    images: ["/ref/images/hero-poster-home-v3.webp"],
+  },
 };
 
 export default function RootLayout({

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "clean": "rimraf .next",
-    "build": "npm run clean && next build --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint app components lib next.config.ts eslint.config.mjs"
   },

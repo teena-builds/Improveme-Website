@@ -72,10 +72,11 @@ const navLinks: Array<{ label: string; href: string; menu?: MenuGroup[] }> = [
   { label: "Home", href: "/" },
   { label: "Our Courses", href: "/courses/", menu: coursesMenu },
   { label: "Our Curriculum", href: "/curriculum/", menu: curriculumMenu },
+  { label: "How We Teach", href: "/how-we-teach/" },
   { label: "About Us", href: "/about/" },
   { label: "Careers", href: "/careers/" },
   { label: "Blogs", href: "/blogs/" },
-  { label: "Contact", href: "/contact/" },
+  // { label: "Contact", href: "/contact/" },
 ];
 
 function Chevron() {

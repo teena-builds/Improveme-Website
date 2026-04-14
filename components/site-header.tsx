@@ -74,7 +74,7 @@ const navLinks = [
   { label: "Our Curriculum", href: "/curriculum/", menu: curriculumMenu },
   { label: "About Us", href: "/about/" },
   { label: "Blogs", href: "/blog/" },
-  { label: "Contact", href: "/contact/" },
+  // { label: "Contact", href: "/contact/" },
 ];
 
 function Chevron() {

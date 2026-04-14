@@ -71,10 +71,12 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
       >
         <p className="text-[14px] font-medium tracking-[-0.01em] text-[#6c748a]">{formatDate(post.publishedAt)}</p>
         <h2
-          className={`mt-4 font-bold leading-[1.22] tracking-[-0.04em] text-[#202430] ${
-            featured ? "text-[32px] md:text-[40px]" : "line-clamp-2 text-[22px] md:text-[25px]"
-          }`}
-        >
+  className={`mt-4 font-bold leading-[1.6] tracking-normal text-[#202430] ${
+    featured
+      ? "text-[32px] md:text-[40px]"
+      : "line-clamp-1 text-[20px] md:text-[20px]"
+  }`}
+>
           <Link href={`/blogs/${post.slug}`} className="transition-colors hover:text-[#365bb2]">
             {post.title}
           </Link>

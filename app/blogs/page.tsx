@@ -64,7 +64,7 @@ export default async function BlogsPage() {
               {featuredPost ? <BlogCard post={featuredPost} featured /> : null}
 
               {remainingPosts.length ? (
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-3">
                   {remainingPosts.map((post) => (
                     <BlogCard key={post.id} post={post} />
                   ))}
