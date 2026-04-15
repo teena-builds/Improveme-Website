@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { HomepageCloneRefined } from "../components/homepage-clone-refined";
 import { getPageByRoute } from "../lib/site";
+import { getPublishedBlogPosts } from "../lib/strapi";
 
 const homePage = getPageByRoute("/");
-//commit test
 export const metadata: Metadata = {
   title: homePage?.title ?? "Improve ME Institute | Tutoring in Dubai for Ages 3-18",
   description:
@@ -38,6 +38,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  return <HomepageCloneRefined />;
+export default async function HomePage() {
+  const { posts } = await getPublishedBlogPosts();
+
+  return <HomepageCloneRefined latestBlogs={posts} />;
 }

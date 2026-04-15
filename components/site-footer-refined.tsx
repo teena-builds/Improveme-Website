@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getPublishedBlogPosts } from "@/lib/strapi";
 
 function SocialIcon({ path }: { path: React.ReactNode }) {
   return (
@@ -11,12 +12,22 @@ function SocialIcon({ path }: { path: React.ReactNode }) {
   );
 }
 
-export function SiteFooterRefined() {
+const formatBlogDate = (value: string) =>
+  new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
+
+export async function SiteFooterRefined() {
+  const { error, posts } = await getPublishedBlogPosts();
+  const latestBlogs = !error ? posts.slice(0, 3) : [];
+
   return (
     <>
       <footer className="bg-[#141c2d] text-white">
         <div className="max-w-none w-full px-4 sm:px-6 lg:px-20 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-8">
+          <div className="grid grid-cols-7 gap-8 md:grid-cols-7 lg:grid-cols-7">
             <div className="md:col-span-1">
               <Link href="/">
                 <Image src="/ref/logo.png" alt="Improve ME Institute" width={180} height={45} className="h-[44px] w-auto" />
@@ -121,27 +132,6 @@ export function SiteFooterRefined() {
             </div>
 
             <div>
-              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">QUICK LINKS</p>
-              <div className="space-y-1.5 text-[14px] text-white/72">
-                {[
-                  ["/", "Home"],
-                  ["/about/", "About Us"],
-                  ["/courses/", "Our Courses"],
-                  ["/curriculum/", "Our Curriculum"],
-                  ["/careers/", "Careers"],
-                  ["/blogs/", "Blogs"],
-                  ["/faq/", "FAQ"],
-                  ["/glossary/", "Glossary"],
-                  ["/contact/", "Contact Us"],
-                ].map(([href, label]) => (
-                  <Link key={href} href={href} className="block transition hover:text-white">
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div>
               <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">CONTACT</p>
               <p className="text-[14px] leading-8 text-white/72">
                 Suite 3016-3017, Building 3
@@ -156,6 +146,33 @@ export function SiteFooterRefined() {
                 <a href="mailto:contact@improvemeinstitute.com" className="block transition hover:text-white">contact@improvemeinstitute.com</a>
                 <p className="text-xs text-white/40 mt-2">Mon-Fri: 9:30am-8:00pm · Sat: 9:00am-7:00pm</p>
               </div>
+            </div>
+            <div className="lg:col-span-2">
+              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">LATEST BLOGS</p>
+              {latestBlogs.length ? (
+                <div className="space-y-4">
+                  {latestBlogs.map((post) => (
+                    <article key={post.id}>
+                      <p className="text-[11px] text-white/45">{formatBlogDate(post.publishedAt)}</p>
+                      <Link
+                        href={`/blogs/${post.slug}`}
+                        className="mt-1 block text-[15px] leading-6 text-white/85 transition hover:text-white"
+                      >
+                        {post.title}
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-[14px] leading-6 text-white/60">
+                    {error ? "Blogs are temporarily unavailable." : "No blog posts published yet."}
+                  </p>
+                  <Link href="/blogs/" className="inline-block text-[14px] font-medium text-white/80 transition hover:text-white">
+                    View all blogs
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 

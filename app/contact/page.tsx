@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BookAssessmentForm } from "../../components/book-assessment-form";
 
 const contactLines = [
   { label: "Primary (Ages 3-10)", phone: "+971 50 185 2505", href: "tel:+971501852505" },
@@ -117,13 +118,8 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            <div className="overflow-hidden rounded-[18px] border border-[#dde4f3] bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.1)]">
-              <iframe
-                src="https://forms.improvemeinstitute.com/improvemeinstitute/form/FreeTrial/formperma/qOW8nB2Vw1j45OH2X8_8QQLUyV61dQ4hJ2Y8x-pFyig?zf_rszfm=1"
-                title="Book free assessment form"
-                loading="lazy"
-                className="h-[1050px] w-full rounded-[12px]"
-              ></iframe>
+            <div className="overflow-hidden rounded-[18px] border border-[#dde4f3] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.1)]">
+              <BookAssessmentForm />
             </div>
           </div>
         </div>
@@ -178,4 +174,3 @@ export default function ContactPage() {
     </main>
   );
 }
-

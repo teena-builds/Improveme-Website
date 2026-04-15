@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 import { BlogRichContent } from "@/components/blog/blog-rich-content";
 import { getPublishedBlogPostBySlug, getPublishedBlogPosts } from "@/lib/strapi";
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export const revalidate = 300;
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("en-US", {
@@ -46,7 +47,6 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  await connection();
   const { slug } = await params;
   const [{ error, post }, { posts: latestPosts }] = await Promise.all([getPublishedBlogPostBySlug(slug), getPublishedBlogPosts()]);
 

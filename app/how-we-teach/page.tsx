@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { LatestGuidesNewsSection } from "@/components/blog/latest-guides-news-section";
+import { getPublishedBlogPosts } from "@/lib/strapi";
 
 const processSteps = [
   {
@@ -62,7 +64,9 @@ export const metadata: Metadata = {
     "Discover how Improve ME Institute teaches through structured planning, small-group tutoring, and exam-focused support that drives measurable progress.",
 };
 
-export default function HowWeTeachPage() {
+export default async function HowWeTeachPage() {
+  const { posts } = await getPublishedBlogPosts();
+
   return (
     <main className="min-h-screen bg-[#f7f9ff]">
       <section className="relative overflow-hidden bg-[#002D62] pb-16 pt-16 md:pb-20 md:pt-24">
@@ -292,6 +296,12 @@ export default function HowWeTeachPage() {
           </div>
         </div>
       </section>
+
+      <LatestGuidesNewsSection
+        posts={posts}
+        className="bg-white py-16 md:py-20"
+        subtitle="Read practical guides, teaching insights, and parent resources from our academic team."
+      />
 
       <section className="bg-[#002D62] py-[78px]">
         <div className="section-container">

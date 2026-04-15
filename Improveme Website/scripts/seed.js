@@ -10,17 +10,15 @@ async function seedExampleApp() {
 
   if (shouldImportSeedData) {
     try {
-      console.log('Setting up the template...');
+      // ...existing code...
       await importSeedData();
-      console.log('Ready to go');
+      // ...existing code...
     } catch (error) {
-      console.log('Could not import seed data');
+      // ...existing code...
       console.error(error);
     }
   } else {
-    console.log(
-      'Seed data has already been imported. We cannot reimport unless you clear your database first.'
-    );
+    console.log('Seed data has already been imported. We cannot reimport unless you clear your database first.');
   }
 }
 

@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { BlogPost } from "@/lib/strapi";
+import { LatestGuidesNewsSection } from "@/components/blog/latest-guides-news-section";
 
 const schoolTicker =
   "Nord Anglia School - Dubai College - Jumeirah College - Repton Dubai - North London Collegiate School - Jumeirah English Speaking School - Kings Dubai - Royal Grammar School Guildford Dubai - GEMS Jumeirah Primary School - Dubai American Academy - Dubai International Academy Al Barsha - Dubai English Speaking College - Brighton College Dubai - Dubai British School - Jebel Ali School - Repton School Dubai FZ-LLC - The English College Dubai - Safa Community School - GEMS World Academy - Al Safa British School -";
@@ -240,7 +242,11 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function HomepageCloneRefined() {
+type HomepageCloneRefinedProps = {
+  latestBlogs?: BlogPost[];
+};
+
+export function HomepageCloneRefined({ latestBlogs = [] }: HomepageCloneRefinedProps) {
   return (
     <main className="min-h-screen bg-white pb-20 md:pb-0">
       <script
@@ -632,6 +638,12 @@ export function HomepageCloneRefined() {
           </div>
         </div>
       </section>
+
+      <LatestGuidesNewsSection
+        posts={latestBlogs}
+        className="bg-[#f4f6fb] py-16 md:py-20"
+        subtitle="Expert insights, parent guidance, and practical learning tips to help students stay ahead."
+      />
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-[80rem] px-4 sm:px-6 lg:px-8">

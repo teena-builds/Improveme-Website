@@ -88,10 +88,35 @@ export type BlogPostResult = {
   post: BlogPostWithContent | null;
 };
 
-const DEFAULT_STRAPI_URL = "http://127.0.0.1:1337";
+const DEFAULT_BLOG_REVALIDATE_SECONDS = 300;
+const DEFAULT_STRAPI_REQUEST_TIMEOUT_MS = 2500;
+const BLOGS_CACHE_TAG = "strapi:articles";
+let lastSuccessfulPosts: BlogPostWithContent[] = [];
 
-const getStrapiBaseUrl = () =>
-  (process.env.STRAPI_URL ?? process.env.NEXT_PUBLIC_STRAPI_URL ?? DEFAULT_STRAPI_URL).replace(/\/$/, "");
+const getBlogsRevalidateSeconds = () => {
+  const raw = process.env.STRAPI_BLOGS_REVALIDATE_SECONDS;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : DEFAULT_BLOG_REVALIDATE_SECONDS;
+};
+
+const getStrapiRequestTimeoutMs = () => {
+  const raw = process.env.STRAPI_REQUEST_TIMEOUT_MS;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : DEFAULT_STRAPI_REQUEST_TIMEOUT_MS;
+};
+
+const getStrapiBaseUrl = () => {
+  const configuredUrl = process.env.STRAPI_URL ?? process.env.NEXT_PUBLIC_STRAPI_URL;
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, "");
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Missing required environment variable: STRAPI_URL or NEXT_PUBLIC_STRAPI_URL");
+  }
+
+  throw new Error("Missing required environment variable: STRAPI_URL or NEXT_PUBLIC_STRAPI_URL");
+};
 
 const getStrapiApiToken = () => process.env.STRAPI_API_TOKEN ?? process.env.NEXT_PUBLIC_STRAPI_API_TOKEN ?? "";
 
@@ -259,13 +284,25 @@ const normalizePost = (value: unknown): BlogPostWithContent | null => {
 
 const readJson = async (path: string) => {
   const apiToken = getStrapiApiToken();
-  const response = await fetch(`${getStrapiBaseUrl()}${path}`, {
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-      ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
-    },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), getStrapiRequestTimeoutMs());
+  const response = await (async () => {
+    try {
+      return await fetch(`${getStrapiBaseUrl()}${path}`, {
+        headers: {
+          Accept: "application/json",
+          ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
+        },
+        next: {
+          revalidate: getBlogsRevalidateSeconds(),
+          tags: [BLOGS_CACHE_TAG],
+        },
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  })();
 
   if (!response.ok) {
     throw new Error(`Strapi request failed: ${response.status} ${response.statusText}`);
@@ -285,13 +322,23 @@ export const getPublishedBlogPosts = cache(async (): Promise<BlogPostsResult> =>
     const posts = flattenEntityArray(payload.data)
       .map((entry) => normalizePost(entry))
       .filter((entry): entry is BlogPostWithContent => entry !== null);
+    lastSuccessfulPosts = posts;
 
     return {
       error: false,
       posts,
     };
   } catch (error) {
-    console.error("Unable to load published blog posts from Strapi.", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Unable to load published blog posts from Strapi.", error);
+    }
+
+    if (lastSuccessfulPosts.length) {
+      return {
+        error: false,
+        posts: lastSuccessfulPosts,
+      };
+    }
 
     return {
       error: true,
