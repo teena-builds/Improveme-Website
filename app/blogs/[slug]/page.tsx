@@ -95,7 +95,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const latestBlogs = latestPosts.filter((entry) => entry.slug !== post.slug).slice(0, 6);
+  const latestBlogs = latestPosts.filter((entry) => entry.slug !== post.slug).slice(0, 5);
 
   return (
     <main className="min-h-screen bg-[#f4f6fa]">
@@ -146,26 +146,34 @@ export default async function BlogDetailPage({ params }: PageProps) {
             </article>
 
             <aside className="xl:sticky xl:top-28 xl:self-start">
-              <div className="rounded-[24px] border border-[#dfe4ee] bg-white p-5 shadow-[0_14px_36px_rgba(15,23,42,0.08)]">
-                <h2 className="text-[26px] font-bold leading-[1.1] tracking-[-0.03em] text-[#202430]">Latest Blogs</h2>
-                <div className="mt-4 space-y-4">
-                  {latestBlogs.map((entry) => (
-                    <Link key={entry.id} href={`/blogs/${entry.slug}`} className="grid grid-cols-[120px_minmax(0,1fr)] gap-4 rounded-[16px] p-1 transition-colors hover:bg-[#f7f9fc]">
-                      <div className="overflow-hidden rounded-[14px] bg-[#eaf0fb]">
-                        <div className="relative aspect-[1.25/1]">
+              <div className="rounded-[24px] border border-[#d9e0ec] bg-[#f3f4f6] p-4 shadow-[0_14px_30px_rgba(15,23,42,0.08)] md:p-5">
+                <h2 className="text-[34px] font-bold leading-[1.05] tracking-[-0.03em] text-[#1f2937]">Latest Blogs</h2>
+                <div className="mt-5 space-y-2">
+                  {latestBlogs.length ? latestBlogs.map((entry) => (
+                    <Link
+                      key={entry.id}
+                      href={`/blogs/${entry.slug}`}
+                      className="grid grid-cols-[84px_minmax(0,1fr)] items-start gap-3 rounded-[14px] p-1 transition-colors duration-200 hover:bg-white/75"
+                    >
+                      <div className="overflow-hidden rounded-[10px] bg-[#e4ebf7]">
+                        <div className="relative h-[64px] w-[84px]">
                           {entry.cover ? (
-                            <Image src={entry.cover.url} alt={entry.cover.alt} fill sizes="120px" className="object-cover" />
+                            <Image src={entry.cover.url} alt={entry.cover.alt} fill sizes="84px" className="object-cover" />
                           ) : (
                             <div className="h-full w-full bg-[linear-gradient(135deg,#002D62_0%,#35508f_65%,#FFC107_100%)]" />
                           )}
                         </div>
                       </div>
-                      <div className="min-w-0">
-                        <h3 className="text-[15px] leading-[1.45] text-[#252b37] transition-colors hover:text-[#1d4d8f]">{trimText(entry.title, 68)}</h3>
-                        <p className="mt-2 text-[14px] text-[#7a8193]">{formatDate(entry.publishedAt)}</p>
+                      <div className="mt-[5px] min-w-0">
+                        <h3 className="line-clamp-3 text-[13px] mb-[5px] leading-[1.35] text-[#374151] transition-colors hover:text-[#1d4d8f]">
+                          {trimText(entry.title, 110)}
+                        </h3>
+                        <p className="mt-0.5 text-[12px] mb-[5px] text-[#9096a7]">{formatDate(entry.publishedAt)}</p>
                       </div>
                     </Link>
-                  ))}
+                  )) : (
+                    <p className="text-[14px] text-[#6b7280]">No recent blogs available right now.</p>
+                  )}
                 </div>
               </div>
             </aside>
