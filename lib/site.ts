@@ -45,22 +45,32 @@ const cleanHtml = (value: string) =>
     .replace(/<!--\$--><!--\/\$-->/g, "")
     .replace(/<!-- -->/g, "")
     .replace(/\/images\//g, "/ref/images/")
-    .replace(/\/videos\//g, "/ref/videos/");
+    .replace(/\/videos\//g, "/ref/videos/")
+    .replace(/href="\/blog\/([^"]*)"/g, 'href="/blogs/$1"')
+    .replace(/href="\/blog"/g, 'href="/blogs"');
 
 const normalizeRoutePath = (routePath: string) => {
   const trimmed = routePath.replace(/\/+$/, "");
   return trimmed || "/";
 };
 
+const isLegacyBlogRoute = (routePath: string) => routePath === "/blog" || routePath.startsWith("/blog/");
+
 export const referenceStylesheets = manifest.stylesheets;
 
-export const sitePages: SitePage[] = (rawPages as RawPage[]).map((page) => ({
-  routePath: normalizeRoutePath(page.routePath),
-  slug: page.slug,
-  title: normalizeText(page.title),
-  description: normalizeText(page.description),
-  html: cleanHtml(page.html),
-}));
+export const sitePages: SitePage[] = (rawPages as RawPage[])
+  .map((page) => ({
+    ...page,
+    routePath: normalizeRoutePath(page.routePath),
+  }))
+  .filter((page) => !isLegacyBlogRoute(page.routePath))
+  .map((page) => ({
+    routePath: page.routePath,
+    slug: page.slug,
+    title: normalizeText(page.title),
+    description: normalizeText(page.description),
+    html: cleanHtml(page.html),
+  }));
 
 const pageMap = new Map(sitePages.map((page) => [page.routePath, page]));
 

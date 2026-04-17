@@ -75,7 +75,7 @@ const navLinks: Array<{ label: string; href: string; menu?: MenuGroup[] }> = [
   { label: "How We Teach", href: "/how-we-teach/" },
   { label: "About Us", href: "/about/" },
   { label: "Careers", href: "/careers/" },
-  { label: "Blogs", href: "/blogs/" },
+  { label: "Blogs", href: "/blogs" },
   // { label: "Contact", href: "/contact/" },
 ];
 

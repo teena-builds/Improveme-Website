@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { BlogCard } from "@/components/blog/blog-card";
+import type { BlogPostWithContent } from "@/lib/wordpress";
 import { getAllPosts } from "@/lib/wordpress";
 
 export const metadata: Metadata = {
@@ -11,12 +12,12 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function BlogsPage() {
-  let posts = [];
-  let error = false;
+  let posts: BlogPostWithContent[] = [];
+  let hasCmsError = false;
   try {
     posts = await getAllPosts();
-  } catch (e) {
-    error = true;
+  } catch {
+    hasCmsError = true;
   }
   const [featuredPost, ...remainingPosts] = posts;
   const categoryPills = ["All", "Exam Prep", "Study Tips", "Curriculum", "Career Guidance"];
@@ -58,7 +59,7 @@ export default async function BlogsPage() {
 
       <section className="py-10 md:py-14">
         <div className="section-container">
-          {error ? (
+          {hasCmsError ? (
             <div className="rounded-[28px] border border-[#d8dfeb] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(15,23,42,0.08)]">
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#D4AF37]">BLOG TEMPORARILY UNAVAILABLE</p>
               <h2 className="mt-3 text-[30px] font-bold tracking-[-0.04em] text-[#1c2744]">The blog CMS is not reachable right now.</h2>

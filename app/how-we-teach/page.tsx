@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { LatestGuidesNewsSection } from "@/components/blog/latest-guides-news-section";
-import { getPublishedBlogPosts } from "@/lib/strapi";
+import type { BlogPostWithContent } from "@/lib/wordpress";
+import { getAllPosts } from "@/lib/wordpress";
 
 const processSteps = [
   {
@@ -65,7 +66,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HowWeTeachPage() {
-  const { posts } = await getPublishedBlogPosts();
+  let posts: BlogPostWithContent[] = [];
+  try {
+    posts = await getAllPosts();
+  } catch {
+    posts = [];
+  }
 
   return (
     <main className="min-h-screen bg-[#f7f9ff]">

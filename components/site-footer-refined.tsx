@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getPublishedBlogPosts } from "@/lib/strapi";
+import type { BlogPostWithContent } from "@/lib/wordpress";
+import { getAllPosts } from "@/lib/wordpress";
 
 function SocialIcon({ path }: { path: React.ReactNode }) {
   return (
@@ -20,8 +21,14 @@ const formatBlogDate = (value: string) =>
   }).format(new Date(value));
 
 export async function SiteFooterRefined() {
-  const { error, posts } = await getPublishedBlogPosts();
-  const latestBlogs = !error ? posts.slice(0, 3) : [];
+  let latestBlogs: BlogPostWithContent[] = [];
+  let hasBlogError = false;
+  try {
+    const posts = await getAllPosts();
+    latestBlogs = posts.slice(0, 3);
+  } catch {
+    hasBlogError = true;
+  }
 
   return (
     <>
@@ -166,7 +173,7 @@ export async function SiteFooterRefined() {
               ) : (
                 <div className="space-y-2">
                   <p className="text-[14px] leading-6 text-white/60">
-                    {error ? "Blogs are temporarily unavailable." : "No blog posts published yet."}
+                    {hasBlogError ? "Blogs are temporarily unavailable." : "No blog posts published yet."}
                   </p>
                   <Link href="/blogs/" className="inline-block text-[14px] font-medium text-white/80 transition hover:text-white">
                     View all blogs

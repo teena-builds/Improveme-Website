@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LatestGuidesNewsSection } from "@/components/blog/latest-guides-news-section";
-import { getPublishedBlogPosts } from "@/lib/strapi";
+import type { BlogPostWithContent } from "@/lib/wordpress";
+import { getAllPosts } from "@/lib/wordpress";
 
 export const metadata: Metadata = {
   title: "Thank You | Improve ME Institute",
@@ -9,7 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function BookAssessmentThankYouPage() {
-  const { posts } = await getPublishedBlogPosts();
+  let posts: BlogPostWithContent[] = [];
+  try {
+    posts = await getAllPosts();
+  } catch {
+    posts = [];
+  }
 
   return (
     <main className="min-h-screen bg-[#f0f4ff]">

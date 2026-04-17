@@ -1,21 +1,27 @@
 import type { NextConfig } from "next";
 
-const defaultStrapiOrigins: string[] = [];
+const defaultMediaPatterns: Array<{ protocol: "http" | "https"; hostname: string; pathname: string }> = [
+  {
+    protocol: "https",
+    hostname: "darkslategrey-fox-461570.hostingersite.com",
+    pathname: "/wp-content/uploads/**",
+  },
+];
 
-const configuredOrigins = [process.env.STRAPI_URL, process.env.NEXT_PUBLIC_STRAPI_URL]
+const configuredOrigins = [process.env.STRAPI_URL, process.env.NEXT_PUBLIC_STRAPI_URL, process.env.WORDPRESS_API_URL]
   .filter((origin): origin is string => Boolean(origin))
   .map((origin) => origin.replace(/\/$/, ""));
 
-const strapiOrigins = Array.from(new Set([...defaultStrapiOrigins, ...configuredOrigins]));
+const mediaOrigins = Array.from(new Set([...configuredOrigins]));
 
-const mediaPatterns = strapiOrigins.flatMap((origin) => {
+const configuredMediaPatterns = mediaOrigins.flatMap((origin) => {
   try {
     const url = new URL(origin);
-    const patterns: NonNullable<NextConfig["images"]>["remotePatterns"] = [
+    const patterns: Array<{ protocol: "http" | "https"; hostname: string; pathname: string }> = [
       {
         protocol: url.protocol.replace(":", "") as "http" | "https",
         hostname: url.hostname,
-        pathname: "/uploads/**",
+        pathname: "/**",
       },
     ];
 
@@ -32,6 +38,8 @@ const mediaPatterns = strapiOrigins.flatMap((origin) => {
     return [];
   }
 });
+
+const mediaPatterns = [...defaultMediaPatterns, ...configuredMediaPatterns];
 
 const nextConfig: NextConfig = {
   images: {

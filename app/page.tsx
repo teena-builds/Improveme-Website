@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { HomepageCloneRefined } from "../components/homepage-clone-refined";
 import { getPageByRoute } from "../lib/site";
-import { getPublishedBlogPosts } from "../lib/strapi";
+import type { BlogPostWithContent } from "../lib/wordpress";
+import { getAllPosts } from "../lib/wordpress";
 
 const homePage = getPageByRoute("/");
 export const metadata: Metadata = {
@@ -39,7 +40,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const { posts } = await getPublishedBlogPosts();
+  let posts: BlogPostWithContent[] = [];
+  try {
+    posts = await getAllPosts();
+  } catch {
+    posts = [];
+  }
 
   return <HomepageCloneRefined latestBlogs={posts} />;
 }

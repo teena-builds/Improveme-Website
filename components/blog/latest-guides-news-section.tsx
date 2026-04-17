@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { BlogPost } from "@/lib/strapi";
+import type { BlogPost } from "@/lib/wordpress";
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("en-US", {

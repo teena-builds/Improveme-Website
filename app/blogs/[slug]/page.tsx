@@ -3,8 +3,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogRichContent } from "@/components/blog/blog-rich-content";
-import { getPostBySlug, getAllPosts } from "@/lib/wordpress";
+import type { BlogPostWithContent } from "@/lib/wordpress";
+import { getAllPosts, getPostBySlug } from "@/lib/wordpress";
 
+type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
@@ -17,7 +19,7 @@ const formatDate = (value: string) =>
     year: "numeric",
   }).format(new Date(value));
 
-const trimExcerpt = (value: string, maxLength: number) => {
+const trimText = (value: string, maxLength: number) => {
   if (!value) {
     return "";
   }
@@ -29,32 +31,41 @@ const trimExcerpt = (value: string, maxLength: number) => {
   return `${value.slice(0, maxLength).trimEnd()}...`;
 };
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  let post: BlogPostWithContent | null = null;
+  try {
+    post = await getPostBySlug(slug);
+  } catch {
+    post = null;
+  }
+
   if (!post) {
     return {
       title: "Blog Post | Improve ME Institute",
     };
   }
+
   return {
     title: `${post.title} | Improve ME Institute`,
     description: post.excerpt,
   };
 }
 
+export default async function BlogDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  let post = null;
-  let latestPosts = [];
-  let error = false;
+
+  let post: BlogPostWithContent | null = null;
+  let latestPosts: BlogPostWithContent[] = [];
+  let hasCmsError = false;
+
   try {
-    [post, latestPosts] = await Promise.all([
-      getPostBySlug(slug),
-      getAllPosts(),
-    ]);
-  } catch (e) {
-    error = true;
+    [post, latestPosts] = await Promise.all([getPostBySlug(slug), getAllPosts()]);
+  } catch {
+    hasCmsError = true;
   }
-  if (error) {
+
+  if (hasCmsError) {
     return (
       <main className="min-h-screen bg-white">
         <section className="relative overflow-hidden bg-[#002D62] py-[72px] md:py-24">
@@ -79,10 +90,13 @@ const trimExcerpt = (value: string, maxLength: number) => {
       </main>
     );
   }
+
   if (!post) {
     notFound();
   }
+
   const latestBlogs = latestPosts.filter((entry) => entry.slug !== post.slug).slice(0, 6);
+
   return (
     <main className="min-h-screen bg-[#f4f6fa]">
       <section className="py-8 md:py-10">
@@ -99,9 +113,7 @@ const trimExcerpt = (value: string, maxLength: number) => {
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
             <article className="min-w-0">
               <div className="rounded-[24px] border border-[#dfe4ee] bg-white p-7 shadow-[0_14px_36px_rgba(15,23,42,0.08)] md:p-8">
-                <h1 className="max-w-4xl text-[30px] font-bold leading-[1.16] tracking-[-0.04em] text-[#143a68] md:text-[44px]">
-                  {post.title}
-                </h1>
+                <h1 className="max-w-4xl text-[30px] font-bold leading-[1.16] tracking-[-0.04em] text-[#143a68] md:text-[44px]">{post.title}</h1>
 
                 <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-3 text-[15px] text-[#4b5563]">
                   <div className="inline-flex items-center gap-2">
@@ -128,7 +140,7 @@ const trimExcerpt = (value: string, maxLength: number) => {
                 ) : null}
 
                 <div className="mt-8">
-                  <BlogRichContent blocks={post.blocks} />
+                  <BlogRichContent html={post.content} />
                 </div>
               </div>
             </article>
@@ -149,9 +161,7 @@ const trimExcerpt = (value: string, maxLength: number) => {
                         </div>
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-[15px] leading-[1.45] text-[#252b37] transition-colors hover:text-[#1d4d8f]">
-                          {trimExcerpt(entry.title, 68)}
-                        </h3>
+                        <h3 className="text-[15px] leading-[1.45] text-[#252b37] transition-colors hover:text-[#1d4d8f]">{trimText(entry.title, 68)}</h3>
                         <p className="mt-2 text-[14px] text-[#7a8193]">{formatDate(entry.publishedAt)}</p>
                       </div>
                     </Link>
