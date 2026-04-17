@@ -58,6 +58,8 @@ const mediaPatterns = [...defaultMediaPatterns, ...configuredMediaPatterns];
 
 const nextConfig: NextConfig = {
   images: {
+    formats: ["image/webp"],
+    minimumCacheTTL: 60 * 60 * 24,
     remotePatterns: mediaPatterns,
   },
 };

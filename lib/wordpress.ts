@@ -5,6 +5,14 @@ type WordPressRenderedField = {
 
 type WordPressFeaturedMedia = {
   alt_text?: string;
+  media_details?: {
+    sizes?: Record<
+      string,
+      {
+        source_url?: string;
+      }
+    >;
+  };
   source_url?: string;
 };
 
@@ -112,7 +120,16 @@ const normalizeCover = (embedded: WordPressEmbedded | undefined, fallbackAlt: st
   }
 
   const media = mediaCollection[0];
-  const source = media.source_url;
+  const preferredSizes = ["large", "medium_large", "medium", "thumbnail"];
+  const sizeEntries = media.media_details?.sizes;
+  const optimizedSource =
+    sizeEntries && isRecord(sizeEntries)
+      ? preferredSizes
+          .map((size) => sizeEntries[size])
+          .find((entry) => isRecord(entry) && typeof entry.source_url === "string" && entry.source_url)?.source_url
+      : undefined;
+
+  const source = optimizedSource ?? media.source_url;
   if (typeof source !== "string" || !source) {
     return undefined;
   }
