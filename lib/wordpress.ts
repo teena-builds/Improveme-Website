@@ -14,6 +14,7 @@ type WordPressEmbedded = {
 
 type WordPressPostResponse = {
   _embedded?: WordPressEmbedded;
+  categories?: number[];
   content?: WordPressRenderedField;
   date?: string;
   excerpt?: WordPressRenderedField;
@@ -22,8 +23,15 @@ type WordPressPostResponse = {
   title?: WordPressRenderedField;
 };
 
+type WordPressCategoryResponse = {
+  id?: number;
+  name?: string;
+  slug?: string;
+};
+
 const DEFAULT_WORDPRESS_REVALIDATE_SECONDS = 300;
 const WORDPRESS_CACHE_TAG = "wordpress:posts";
+const WORDPRESS_CATEGORIES_CACHE_TAG = "wordpress:categories";
 
 export type BlogMedia = {
   alt: string;
@@ -31,12 +39,19 @@ export type BlogMedia = {
 };
 
 export type BlogPost = {
+  categoryIds: number[];
   cover?: BlogMedia;
   excerpt: string;
   id: string;
   publishedAt: string;
   slug: string;
   title: string;
+};
+
+export type BlogCategory = {
+  id: number;
+  name: string;
+  slug: string;
 };
 
 export type BlogPostWithContent = BlogPost & {
@@ -118,6 +133,7 @@ const normalizePost = (value: WordPressPostResponse): BlogPostWithContent | null
   }
 
   return {
+    categoryIds: Array.isArray(value.categories) ? value.categories.filter((categoryId) => Number.isInteger(categoryId)) : [],
     content,
     cover: normalizeCover(value._embedded, title),
     excerpt: normalizeExcerpt(value.excerpt, content),
@@ -128,14 +144,33 @@ const normalizePost = (value: WordPressPostResponse): BlogPostWithContent | null
   };
 };
 
-const readJson = async <T>(pathAndQuery: string): Promise<{ data: T; headers: Headers }> => {
+const normalizeCategory = (value: WordPressCategoryResponse): BlogCategory | null => {
+  if (typeof value.id !== "number" || typeof value.slug !== "string" || typeof value.name !== "string") {
+    return null;
+  }
+
+  const slug = value.slug.trim();
+  const name = value.name.trim();
+
+  if (!slug || !name) {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    name,
+    slug,
+  };
+};
+
+const readJson = async <T>(pathAndQuery: string, tags: string[]): Promise<{ data: T; headers: Headers }> => {
   const response = await fetch(`${getWordpressApiUrl()}${pathAndQuery}`, {
     headers: {
       Accept: "application/json",
     },
     next: {
       revalidate: getWordpressRevalidateSeconds(),
-      tags: [WORDPRESS_CACHE_TAG],
+      tags,
     },
   });
 
@@ -151,7 +186,7 @@ const readJson = async <T>(pathAndQuery: string): Promise<{ data: T; headers: He
 
 export async function getAllPosts(): Promise<BlogPostWithContent[]> {
   const allEntries: WordPressPostResponse[] = [];
-  const { data: firstPageEntries, headers } = await readJson<WordPressPostResponse[]>("/posts?_embed");
+  const { data: firstPageEntries, headers } = await readJson<WordPressPostResponse[]>("/posts?_embed", [WORDPRESS_CACHE_TAG]);
   allEntries.push(...firstPageEntries);
 
   const headerValue = headers.get("x-wp-totalpages");
@@ -159,7 +194,7 @@ export async function getAllPosts(): Promise<BlogPostWithContent[]> {
   const totalPages = Number.isFinite(parsedPages) && parsedPages > 0 ? parsedPages : 1;
 
   for (let page = 2; page <= totalPages; page += 1) {
-    const { data } = await readJson<WordPressPostResponse[]>(`/posts?_embed&page=${page}`);
+    const { data } = await readJson<WordPressPostResponse[]>(`/posts?_embed&page=${page}`, [WORDPRESS_CACHE_TAG]);
     allEntries.push(...data);
   }
 
@@ -168,7 +203,36 @@ export async function getAllPosts(): Promise<BlogPostWithContent[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPostWithContent | null> {
-  const { data: entries } = await readJson<WordPressPostResponse[]>(`/posts?slug=${encodeURIComponent(slug)}&_embed`);
+  const { data: entries } = await readJson<WordPressPostResponse[]>(
+    `/posts?slug=${encodeURIComponent(slug)}&_embed`,
+    [WORDPRESS_CACHE_TAG]
+  );
   const post = entries.map((entry) => normalizePost(entry)).find((entry): entry is BlogPostWithContent => entry !== null);
   return post ?? null;
+}
+
+export async function getAllCategories(): Promise<BlogCategory[]> {
+  const allEntries: WordPressCategoryResponse[] = [];
+  const { data: firstPageEntries, headers } = await readJson<WordPressCategoryResponse[]>(
+    "/categories?per_page=100",
+    [WORDPRESS_CATEGORIES_CACHE_TAG]
+  );
+  allEntries.push(...firstPageEntries);
+
+  const headerValue = headers.get("x-wp-totalpages");
+  const parsedPages = Number(headerValue);
+  const totalPages = Number.isFinite(parsedPages) && parsedPages > 0 ? parsedPages : 1;
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const { data } = await readJson<WordPressCategoryResponse[]>(
+      `/categories?per_page=100&page=${page}`,
+      [WORDPRESS_CATEGORIES_CACHE_TAG]
+    );
+    allEntries.push(...data);
+  }
+
+  return allEntries
+    .map((entry) => normalizeCategory(entry))
+    .filter((entry): entry is BlogCategory => entry !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

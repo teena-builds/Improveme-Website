@@ -22,11 +22,12 @@ const trimExcerpt = (value: string, maxLength: number) => {
 };
 
 type BlogCardProps = {
+  categoryLabel?: string;
   post: BlogPost;
   featured?: boolean;
 };
 
-export function BlogCard({ post, featured = false }: BlogCardProps) {
+export function BlogCard({ categoryLabel, post, featured = false }: BlogCardProps) {
   return (
     <article
       className={`group overflow-hidden rounded-[20px] border border-[#d9e1ec] bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)] ${
@@ -64,14 +65,19 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
 
       <div
         className={`bg-white ${
-          featured ? "px-7 py-7 md:px-8 md:py-8 lg:flex lg:flex-col lg:justify-center" : "flex h-[258px] flex-col px-5 py-4"
+          featured ? "px-7 py-7 md:px-8 md:py-8 lg:flex lg:flex-col lg:justify-center" : "flex flex-col px-5 py-4"
         }`}
       >
+        {!featured && categoryLabel ? (
+          <p className="mb-2 inline-flex w-fit rounded-full bg-[#FFC107] px-3 py-1 text-[13px] font-semibold leading-none text-[#0f2b57]">
+            {categoryLabel}
+          </p>
+        ) : null}
         <h2
-  className={`font-bold leading-[1.45] tracking-normal text-[#202430] ${
+  className={`m-0 font-bold leading-[1.35] tracking-normal text-[#202430] ${
     featured
       ? "text-[32px] md:text-[40px]"
-      : "line-clamp-2 text-[20px] md:text-[20px]"
+      : "line-clamp-2 text-[20px] leading-[1.4] md:text-[20px]"
   }`}
 >
           <Link href={`/blogs/${post.slug}`} className="transition-colors hover:text-[#365bb2]">
@@ -79,17 +85,17 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
           </Link>
         </h2>
         <p
-          className={`mt-3 text-[#596273] ${
-            featured ? "max-w-[30rem] text-[17px] leading-[1.8]" : "line-clamp-3 text-[14px] leading-[1.85]"
+          className={`m-0 text-[#596273] ${
+            featured ? "mt-3 max-w-[30rem] text-[17px] leading-[1.8]" : "mt-1 line-clamp-3 text-[14px] leading-[1.75]"
           }`}
         >
           {trimExcerpt(post.excerpt, featured ? 260 : 135)}
         </p>
-        {!featured ? <p className="mt-3 text-[11px] text-[#6c748a]">{formatDate(post.publishedAt)}</p> : null}
+        {!featured ? <p className="m-0 mt-1 text-[11px] text-[#6c748a]">{formatDate(post.publishedAt)}</p> : null}
         <Link
           href={`/blogs/${post.slug}`}
-          className={`mt-auto inline-flex w-fit items-center gap-2 pt-3 text-[15px] font-semibold transition-colors ${
-            featured ? "text-[#1f355f] hover:text-[#365bb2]" : "text-[#FFC107] hover:text-[#e5aa00]"
+          className={`mt-2 inline-flex w-fit items-center gap-2 text-[15px] font-semibold transition-colors ${
+            featured ? "pt-3 text-[#1f355f] hover:text-[#365bb2]" : "pt-2 text-[#FFC107] hover:text-[#e5aa00]"
           }`}
         >
           Read more

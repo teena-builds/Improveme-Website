@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { BlogCard } from "@/components/blog/blog-card";
 import type { BlogPostWithContent } from "@/lib/wordpress";
-import { getAllPosts } from "@/lib/wordpress";
+import { getAllCategories, getAllPosts } from "@/lib/wordpress";
 
 export const metadata: Metadata = {
   title: "Blogs | Improve ME Institute",
@@ -11,10 +11,22 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 300;
-const POSTS_PER_PAGE = 7;
+const POSTS_PER_PAGE = 6;
+const CATEGORY_QUERY_TO_WORDPRESS_SLUG: Record<string, string> = {
+  books: "uncategorized",
+};
+const CATEGORY_WORDPRESS_TO_QUERY_SLUG = Object.fromEntries(
+  Object.entries(CATEGORY_QUERY_TO_WORDPRESS_SLUG).map(([querySlug, wordpressSlug]) => [wordpressSlug, querySlug])
+) as Record<string, string>;
+
+const CATEGORY_LABEL_OVERRIDES: Record<string, string> = {
+  checked: "Checked",
+  books: "Books",
+  uncategorized: "Books",
+};
 
 type BlogsPageProps = {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ category?: string; page?: string }>;
 };
 
 const parsePageNumber = (value: string | undefined) => {
@@ -22,22 +34,99 @@ const parsePageNumber = (value: string | undefined) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
 };
 
+const resolveSelectedCategory = (
+  categories: { id: number; name: string; slug: string }[],
+  requestedCategorySlug: string | undefined
+) => {
+  if (!requestedCategorySlug) {
+    return undefined;
+  }
+
+  const directMatch = categories.find((category) => category.slug === requestedCategorySlug);
+  if (directMatch) {
+    return directMatch;
+  }
+
+  const mappedWordpressSlug = CATEGORY_QUERY_TO_WORDPRESS_SLUG[requestedCategorySlug];
+  if (!mappedWordpressSlug) {
+    return undefined;
+  }
+
+  return categories.find((category) => category.slug === mappedWordpressSlug);
+};
+
+const getCategoryDisplayName = (category: { name: string; slug: string }) => {
+  const querySlug = CATEGORY_WORDPRESS_TO_QUERY_SLUG[category.slug] ?? category.slug;
+  return CATEGORY_LABEL_OVERRIDES[querySlug] ?? CATEGORY_LABEL_OVERRIDES[category.slug] ?? category.name;
+};
+
 export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   let posts: BlogPostWithContent[] = [];
+  let categories: { id: number; name: string; slug: string }[] = [];
   let hasCmsError = false;
   try {
-    posts = await getAllPosts();
+    [posts, categories] = await Promise.all([getAllPosts(), getAllCategories()]);
   } catch {
     hasCmsError = true;
   }
+
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const requestedCategorySlug = resolvedSearchParams?.category?.trim();
+  const selectedCategory = resolveSelectedCategory(categories, requestedCategorySlug);
+  const activeCategorySlug = selectedCategory ? (CATEGORY_WORDPRESS_TO_QUERY_SLUG[selectedCategory.slug] ?? selectedCategory.slug) : "all";
+  const filteredPosts =
+    selectedCategory && selectedCategory.id
+      ? posts.filter((post) => post.categoryIds.includes(selectedCategory.id))
+      : posts;
+
   const requestedPage = parsePageNumber(resolvedSearchParams?.page);
-  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / POSTS_PER_PAGE));
   const currentPage = Math.min(requestedPage, totalPages);
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
-  const paginatedPosts = posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+  const paginatedPosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+  const categoryLabelById = new Map<number, string>(
+    categories.map((category) => [category.id, getCategoryDisplayName(category)])
+  );
 
-  const categoryPills = ["All", "Exam Prep", "Study Tips", "Curriculum", "Career Guidance"];
+  const categoryPills = (() => {
+    const mapped = categories.map((category) => {
+      const querySlug = CATEGORY_WORDPRESS_TO_QUERY_SLUG[category.slug] ?? category.slug;
+      return {
+        ...category,
+        wordpressSlug: category.slug,
+        slug: querySlug,
+        name: getCategoryDisplayName(category),
+      };
+    });
+
+    const dedupedByQuerySlug = new Map<string, (typeof mapped)[number]>();
+    for (const entry of mapped) {
+      const existing = dedupedByQuerySlug.get(entry.slug);
+      if (!existing) {
+        dedupedByQuerySlug.set(entry.slug, entry);
+        continue;
+      }
+
+      // Prefer a real category slug over alias fallback when both collapse to same query slug.
+      const existingIsAliasFallback = existing.wordpressSlug === CATEGORY_QUERY_TO_WORDPRESS_SLUG[entry.slug];
+      if (existingIsAliasFallback && entry.wordpressSlug !== CATEGORY_QUERY_TO_WORDPRESS_SLUG[entry.slug]) {
+        dedupedByQuerySlug.set(entry.slug, entry);
+      }
+    }
+
+    return [{ name: "All Blogs", slug: "all" }, ...Array.from(dedupedByQuerySlug.values())];
+  })();
+  const getBlogsHref = (page: number, categorySlug: string) => {
+    const params = new URLSearchParams();
+    if (categorySlug !== "all") {
+      params.set("category", categorySlug);
+    }
+    if (page > 1) {
+      params.set("page", String(page));
+    }
+    const query = params.toString();
+    return query ? `/blogs?${query}` : "/blogs";
+  };
 
   return (
     <main className="min-h-screen bg-[#f4f6fa]">
@@ -59,16 +148,18 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
       <section className="border-b border-[#dfe4ee] bg-white">
         <div className="section-container">
           <div className="flex flex-wrap gap-2 py-5 md:gap-3">
-            {categoryPills.map((pill, index) => (
-              <button
-                key={pill}
-                type="button"
+            {categoryPills.map((pill) => (
+              <Link
+                key={pill.slug}
+                href={getBlogsHref(1, pill.slug)}
                 className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-                  index === 0 ? "bg-[#FFC107] text-[#002D62]" : "bg-[#eef2f7] text-[#667085] hover:bg-[#e4ebf5]"
+                  activeCategorySlug === pill.slug
+                    ? "bg-[#FFC107] text-[#002D62]"
+                    : "bg-[#eef2f7] text-[#667085] hover:bg-[#e4ebf5]"
                 }`}
               >
-                {pill}
-              </button>
+                {pill.name}
+              </Link>
             ))}
           </div>
         </div>
@@ -84,18 +175,22 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                 The blog CMS is not reachable right now. Please check your WordPress API connection.
               </p>
             </div>
-          ) : posts.length ? (
+          ) : filteredPosts.length ? (
             <div className="space-y-8">
               <div className="grid gap-6 md:grid-cols-3">
                 {paginatedPosts.map((post) => (
-                  <BlogCard key={post.id} post={post} />
+                  <BlogCard
+                    key={post.id}
+                    post={post}
+                    categoryLabel={post.categoryIds.map((categoryId) => categoryLabelById.get(categoryId)).find(Boolean)}
+                  />
                 ))}
               </div>
 
               {totalPages > 1 ? (
                 <nav aria-label="Blog pagination" className="flex flex-wrap items-center justify-center gap-2 pt-2">
                   <Link
-                    href={currentPage > 1 ? `/blogs?page=${currentPage - 1}` : "/blogs?page=1"}
+                    href={currentPage > 1 ? getBlogsHref(currentPage - 1, activeCategorySlug) : getBlogsHref(1, activeCategorySlug)}
                     aria-disabled={currentPage === 1}
                     className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
                       currentPage === 1
@@ -111,7 +206,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                     return (
                       <Link
                         key={pageNumber}
-                        href={`/blogs?page=${pageNumber}`}
+                        href={getBlogsHref(pageNumber, activeCategorySlug)}
                         aria-current={isActive ? "page" : undefined}
                         className={`rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
                           isActive
@@ -125,7 +220,11 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                   })}
 
                   <Link
-                    href={currentPage < totalPages ? `/blogs?page=${currentPage + 1}` : `/blogs?page=${totalPages}`}
+                    href={
+                      currentPage < totalPages
+                        ? getBlogsHref(currentPage + 1, activeCategorySlug)
+                        : getBlogsHref(totalPages, activeCategorySlug)
+                    }
                     aria-disabled={currentPage === totalPages}
                     className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
                       currentPage === totalPages
@@ -140,10 +239,10 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
             </div>
           ) : (
             <div className="rounded-[28px] border border-[#d8dfeb] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(15,23,42,0.08)]">
-              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#D4AF37]">NO PUBLISHED POSTS YET</p>
-              <h2 className="mt-3 text-[30px] font-bold tracking-[-0.04em] text-[#1c2744]">The blog is connected and ready.</h2>
+              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#D4AF37]">NO POSTS IN THIS CATEGORY</p>
+              <h2 className="mt-3 text-[30px] font-bold tracking-[-0.04em] text-[#1c2744]">No blogs found for this filter yet.</h2>
               <p className="mt-4 max-w-2xl text-[16px] leading-[1.8] text-[#5a6da2]">
-                As soon as an article is published in WordPress, it will appear on this page automatically.
+                Try another category or check back soon. New WordPress posts appear here automatically after publishing.
               </p>
             </div>
           )}
