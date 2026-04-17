@@ -176,6 +176,60 @@ const appendToGoogleSheet = async (submission: BookAssessmentSubmission, meta: S
   });
 };
 
+// Sends a confirmation email to the user who submitted the form
+const sendUserConfirmationEmail = async (submission: BookAssessmentSubmission) => {
+  // Validate email
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!submission.parentEmail || !emailPattern.test(submission.parentEmail)) {
+    // Skip sending if email is missing or invalid
+    return;
+  }
+
+  const host = ensureRequiredConfig("SMTP_HOST");
+  const port = Number.parseInt(readEnv("SMTP_PORT") || "587", 10);
+  const user = ensureRequiredConfig("SMTP_USER");
+  const pass = ensureRequiredConfig("SMTP_PASS");
+  const fromEmail = ensureRequiredConfig("BOOKING_FROM_EMAIL");
+  const fromName = readEnv("BOOKING_FROM_NAME") || "Improve ME Website";
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: {
+      user,
+      pass,
+    },
+  });
+
+  // Only include fields that exist in the submission
+  const fields: Array<{ label: string; value: string }> = [
+    { label: "Name", value: submission.parentName },
+    { label: "Email", value: submission.parentEmail },
+    { label: "Phone", value: submission.parentPhone },
+    { label: "Message", value: submission.message },
+  ].filter(f => f.value);
+
+  const emailBody = [
+    `Dear ${submission.parentName || "Parent"},`,
+    "",
+    "Thank you for contacting us. We have received your submission and will get back to you soon.",
+    "",
+    "Submitted details:",
+    ...fields.map(f => `${f.label}: ${f.value}`),
+    "",
+    "Best regards,",
+    fromName,
+  ].join("\n");
+
+  await transporter.sendMail({
+    from: `"${fromName}" <${fromEmail}>`,
+    to: submission.parentEmail,
+    subject: "Thank you for contacting us",
+    text: emailBody,
+  });
+};
+
 const sendNotificationEmail = async (submission: BookAssessmentSubmission, meta: SubmissionMeta) => {
   const host = ensureRequiredConfig("SMTP_HOST");
   const port = Number.parseInt(readEnv("SMTP_PORT") || "587", 10);
@@ -227,11 +281,14 @@ export const processBookAssessmentSubmission = async (
   const results = await Promise.allSettled([
     withTimeout(appendToGoogleSheet(submission, meta), timeoutMs, "Google Sheets append"),
     withTimeout(sendNotificationEmail(submission, meta), timeoutMs, "Email notification"),
+    // User confirmation email (auto-reply)
+    withTimeout(sendUserConfirmationEmail(submission), timeoutMs, "User confirmation email"),
   ]);
 
-  const taskNames = ["googleSheet", "email"] as const;
+  const taskNames = ["googleSheet", "email", "userConfirmation"] as const;
   results.forEach((result, index) => {
     if (result.status === "rejected") {
+      // Only log error for user confirmation, do not break flow
       console.error(`Book assessment async task failed: ${taskNames[index]}`, result.reason);
     }
   });

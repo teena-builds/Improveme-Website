@@ -3,9 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogRichContent } from "@/components/blog/blog-rich-content";
-import { getPublishedBlogPostBySlug, getPublishedBlogPosts } from "@/lib/strapi";
+import { getPostBySlug, getAllPosts } from "@/lib/wordpress";
 
-type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
@@ -30,26 +29,31 @@ const trimExcerpt = (value: string, maxLength: number) => {
   return `${value.slice(0, maxLength).trimEnd()}...`;
 };
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { post } = await getPublishedBlogPostBySlug(slug);
-
+  const post = await getPostBySlug(slug);
   if (!post) {
     return {
       title: "Blog Post | Improve ME Institute",
     };
   }
-
   return {
     title: `${post.title} | Improve ME Institute`,
     description: post.excerpt,
   };
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const [{ error, post }, { posts: latestPosts }] = await Promise.all([getPublishedBlogPostBySlug(slug), getPublishedBlogPosts()]);
-
+  let post = null;
+  let latestPosts = [];
+  let error = false;
+  try {
+    [post, latestPosts] = await Promise.all([
+      getPostBySlug(slug),
+      getAllPosts(),
+    ]);
+  } catch (e) {
+    error = true;
+  }
   if (error) {
     return (
       <main className="min-h-screen bg-white">
@@ -68,20 +72,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               The article service is offline right now.
             </h1>
             <p className="mt-6 max-w-3xl text-[18px] leading-[1.8] text-white/82">
-              Start the Strapi server again and this article page will load normally.
+              The blog CMS is not reachable right now. Please check your WordPress API connection.
             </p>
           </div>
         </section>
       </main>
     );
   }
-
   if (!post) {
     notFound();
   }
-
   const latestBlogs = latestPosts.filter((entry) => entry.slug !== post.slug).slice(0, 6);
-
   return (
     <main className="min-h-screen bg-[#f4f6fa]">
       <section className="py-8 md:py-10">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+
 import { BlogCard } from "@/components/blog/blog-card";
-import { getPublishedBlogPosts } from "@/lib/strapi";
+import { getAllPosts } from "@/lib/wordpress";
 
 export const metadata: Metadata = {
   title: "Blogs | Improve ME Institute",
@@ -10,7 +11,13 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function BlogsPage() {
-  const { error, posts } = await getPublishedBlogPosts();
+  let posts = [];
+  let error = false;
+  try {
+    posts = await getAllPosts();
+  } catch (e) {
+    error = true;
+  }
   const [featuredPost, ...remainingPosts] = posts;
   const categoryPills = ["All", "Exam Prep", "Study Tips", "Curriculum", "Career Guidance"];
 
@@ -56,7 +63,7 @@ export default async function BlogsPage() {
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#D4AF37]">BLOG TEMPORARILY UNAVAILABLE</p>
               <h2 className="mt-3 text-[30px] font-bold tracking-[-0.04em] text-[#1c2744]">The blog CMS is not reachable right now.</h2>
               <p className="mt-4 max-w-2xl text-[16px] leading-[1.8] text-[#5a6da2]">
-                Start the Strapi server again and this page will automatically load published posts.
+                The blog CMS is not reachable right now. Please check your WordPress API connection.
               </p>
             </div>
           ) : posts.length ? (
@@ -76,7 +83,7 @@ export default async function BlogsPage() {
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#D4AF37]">NO PUBLISHED POSTS YET</p>
               <h2 className="mt-3 text-[30px] font-bold tracking-[-0.04em] text-[#1c2744]">The blog is connected and ready.</h2>
               <p className="mt-4 max-w-2xl text-[16px] leading-[1.8] text-[#5a6da2]">
-                As soon as an article is published in Strapi, it will appear on this page automatically.
+                As soon as an article is published in WordPress, it will appear on this page automatically.
               </p>
             </div>
           )}
