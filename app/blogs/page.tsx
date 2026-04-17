@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { BlogCard } from "@/components/blog/blog-card";
 import type { BlogPostWithContent } from "@/lib/wordpress";
@@ -10,8 +11,18 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 300;
+const POSTS_PER_PAGE = 7;
 
-export default async function BlogsPage() {
+type BlogsPageProps = {
+  searchParams?: Promise<{ page?: string }>;
+};
+
+const parsePageNumber = (value: string | undefined) => {
+  const parsed = Number.parseInt(value ?? "1", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+};
+
+export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   let posts: BlogPostWithContent[] = [];
   let hasCmsError = false;
   try {
@@ -19,7 +30,13 @@ export default async function BlogsPage() {
   } catch {
     hasCmsError = true;
   }
-  const [featuredPost, ...remainingPosts] = posts;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const requestedPage = parsePageNumber(resolvedSearchParams?.page);
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  const currentPage = Math.min(requestedPage, totalPages);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const paginatedPosts = posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+
   const categoryPills = ["All", "Exam Prep", "Study Tips", "Curriculum", "Career Guidance"];
 
   return (
@@ -69,14 +86,56 @@ export default async function BlogsPage() {
             </div>
           ) : posts.length ? (
             <div className="space-y-8">
-              {featuredPost ? <BlogCard post={featuredPost} featured /> : null}
+              <div className="grid gap-6 md:grid-cols-3">
+                {paginatedPosts.map((post) => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
 
-              {remainingPosts.length ? (
-                <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-3">
-                  {remainingPosts.map((post) => (
-                    <BlogCard key={post.id} post={post} />
-                  ))}
-                </div>
+              {totalPages > 1 ? (
+                <nav aria-label="Blog pagination" className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  <Link
+                    href={currentPage > 1 ? `/blogs?page=${currentPage - 1}` : "/blogs?page=1"}
+                    aria-disabled={currentPage === 1}
+                    className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                      currentPage === 1
+                        ? "pointer-events-none border-[#d5dbe8] bg-[#f5f7fb] text-[#9aa3b7]"
+                        : "border-[#d5dbe8] bg-white text-[#1f2a44] hover:bg-[#f0f4fb]"
+                    }`}
+                  >
+                    Previous
+                  </Link>
+
+                  {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => {
+                    const isActive = pageNumber === currentPage;
+                    return (
+                      <Link
+                        key={pageNumber}
+                        href={`/blogs?page=${pageNumber}`}
+                        aria-current={isActive ? "page" : undefined}
+                        className={`rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
+                          isActive
+                            ? "border-[#002D62] bg-[#002D62] text-white"
+                            : "border-[#d5dbe8] bg-white text-[#1f2a44] hover:bg-[#f0f4fb]"
+                        }`}
+                      >
+                        {pageNumber}
+                      </Link>
+                    );
+                  })}
+
+                  <Link
+                    href={currentPage < totalPages ? `/blogs?page=${currentPage + 1}` : `/blogs?page=${totalPages}`}
+                    aria-disabled={currentPage === totalPages}
+                    className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                      currentPage === totalPages
+                        ? "pointer-events-none border-[#d5dbe8] bg-[#f5f7fb] text-[#9aa3b7]"
+                        : "border-[#d5dbe8] bg-white text-[#1f2a44] hover:bg-[#f0f4fb]"
+                    }`}
+                  >
+                    Next
+                  </Link>
+                </nav>
               ) : null}
             </div>
           ) : (

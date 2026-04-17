@@ -3,8 +3,23 @@ import type { NextConfig } from "next";
 const defaultMediaPatterns: Array<{ protocol: "http" | "https"; hostname: string; pathname: string }> = [
   {
     protocol: "https",
-    hostname: "darkslategrey-fox-461570.hostingersite.com",
-    pathname: "/wp-content/uploads/**",
+    hostname: "**.wordpress.com",
+    pathname: "/**",
+  },
+  {
+    protocol: "https",
+    hostname: "i0.wp.com",
+    pathname: "/**",
+  },
+  {
+    protocol: "https",
+    hostname: "i1.wp.com",
+    pathname: "/**",
+  },
+  {
+    protocol: "https",
+    hostname: "i2.wp.com",
+    pathname: "/**",
   },
 ];
 
