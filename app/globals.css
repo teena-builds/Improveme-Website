@@ -6,6 +6,10 @@ body {
   min-height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Plus Jakarta Sans","Plus Jakarta Sans Fallback";
 }
