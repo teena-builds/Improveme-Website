@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogPosts = [];
   }
 
-  const staticEntries = sitePages.map((page) => ({
+  const staticEntries = sitePages.map<MetadataRoute.Sitemap[number]>((page) => ({
     url: `${baseUrl}${page.routePath}`,
     lastModified: now,
     changeFrequency: page.routePath === "/" ? "weekly" : "monthly",
