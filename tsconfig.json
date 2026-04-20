@@ -40,7 +40,6 @@
     ".next/prod/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "Improveme Website"
+    "node_modules"
   ]
 }

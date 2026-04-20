@@ -23,7 +23,7 @@ const defaultMediaPatterns: Array<{ protocol: "http" | "https"; hostname: string
   },
 ];
 
-const configuredOrigins = [process.env.STRAPI_URL, process.env.NEXT_PUBLIC_STRAPI_URL, process.env.WORDPRESS_API_URL]
+const configuredOrigins = [process.env.WORDPRESS_API_URL]
   .filter((origin): origin is string => Boolean(origin))
   .map((origin) => origin.replace(/\/$/, ""));
 
@@ -32,23 +32,13 @@ const mediaOrigins = Array.from(new Set([...configuredOrigins]));
 const configuredMediaPatterns = mediaOrigins.flatMap((origin) => {
   try {
     const url = new URL(origin);
-    const patterns: Array<{ protocol: "http" | "https"; hostname: string; pathname: string }> = [
+    return [
       {
         protocol: url.protocol.replace(":", "") as "http" | "https",
         hostname: url.hostname,
         pathname: "/**",
       },
     ];
-
-    if (url.hostname.endsWith(".strapiapp.com")) {
-      patterns.push({
-        protocol: "https",
-        hostname: url.hostname.replace(".strapiapp.com", ".media.strapiapp.com"),
-        pathname: "/**",
-      });
-    }
-
-    return patterns;
   } catch {
     return [];
   }
