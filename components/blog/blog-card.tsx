@@ -91,7 +91,12 @@ export function BlogCard({ categoryLabel, post, featured = false }: BlogCardProp
         >
           {trimExcerpt(post.excerpt, featured ? 260 : 135)}
         </p>
-        {!featured ? <p className="m-0 mt-1 text-[11px] text-[#6c748a]">{formatDate(post.publishedAt)}</p> : null}
+        {!featured ? (
+          <div className="mt-1 flex items-center justify-between gap-3 text-[11px] text-[#6c748a]">
+            <span>{formatDate(post.publishedAt)}</span>
+            <span className="whitespace-nowrap">{post.readingTimeMinutes} min read</span>
+          </div>
+        ) : null}
         <Link
           href={`/blogs/${post.slug}`}
           className={`mt-2 inline-flex w-fit items-center gap-2 text-[15px] font-semibold transition-colors ${

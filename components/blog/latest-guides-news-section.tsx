@@ -55,7 +55,9 @@ export function LatestGuidesNewsSection({
                 ) : null}
               </div>
               <div className="px-5 pb-6 pt-5 md:px-6">
-                <p className="text-[14px] text-[#6c748a]">{formatDate(post.publishedAt)}</p>
+                <p className="text-[14px] text-[#6c748a]">
+                  {formatDate(post.publishedAt)} • {post.readingTimeMinutes} min read
+                </p>
                 <h3 className="mt-3 line-clamp-2 text-[22px] font-bold leading-[1.35] tracking-[-0.01em] text-[#202430] transition-colors group-hover:text-[#2f559a]">
                   {post.title}
                 </h3>

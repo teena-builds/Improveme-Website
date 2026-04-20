@@ -195,6 +195,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
                     </span>
                     <span className="text-[16px] md:text-[18px]">{formatDate(post.publishedAt)}</span>
                   </div>
+                  <div className="inline-flex items-center gap-2">
+                    <span aria-hidden="true" className="text-[20px] text-[#4b5563]">
+                      &raquo;
+                    </span>
+                    <span className="text-[16px] md:text-[18px]">{post.readingTimeMinutes} min read</span>
+                  </div>
                 </div>
 
                 {post.cover ? (
@@ -241,7 +247,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                         <h3 className="line-clamp-3 text-[13px] mb-[5px] leading-[1.35] text-[#374151] transition-colors hover:text-[#1d4d8f]">
                           {trimText(entry.title, 110)}
                         </h3>
-                        <p className="mt-0.5 text-[12px] mb-[5px] text-[#9096a7]">{formatDate(entry.publishedAt)}</p>
+                        <p className="mb-[5px] mt-0.5 text-[12px] text-[#9096a7]">{formatDate(entry.publishedAt)}</p>
                       </div>
                     </Link>
                   )) : (

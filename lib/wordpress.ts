@@ -52,6 +52,7 @@ export type BlogPost = {
   excerpt: string;
   id: string;
   publishedAt: string;
+  readingTimeMinutes: number;
   slug: string;
   title: string;
 };
@@ -97,6 +98,12 @@ const decodeHtmlEntities = (value: string) =>
     .replace(/&#39;/g, "'");
 
 const stripHtml = (html: string) => decodeHtmlEntities(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+const getReadingTimeMinutes = (html: string) => {
+  const cleanText = stripHtml(html);
+  const wordCount = cleanText ? cleanText.split(/\s+/).filter(Boolean).length : 0;
+  return Math.max(1, Math.ceil(wordCount / 200));
+};
 
 const normalizeTitle = (value: WordPressRenderedField | undefined) =>
   typeof value?.rendered === "string" ? stripHtml(value.rendered) : "";
@@ -156,6 +163,7 @@ const normalizePost = (value: WordPressPostResponse): BlogPostWithContent | null
     excerpt: normalizeExcerpt(value.excerpt, content),
     id: String(id),
     publishedAt: date,
+    readingTimeMinutes: getReadingTimeMinutes(content),
     slug,
     title,
   };
