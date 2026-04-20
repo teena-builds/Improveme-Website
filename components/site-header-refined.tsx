@@ -230,7 +230,7 @@ export function SiteHeaderRefined() {
             </div>
 
             {mobileOpen ? (
-              <div className="border-t border-gray-100 pb-4 lg:hidden">
+              <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-gray-100 pb-4 lg:hidden">
                 <div className="space-y-1 pt-3">
                   {navLinks.map((link) => (
                     <div key={link.label}>

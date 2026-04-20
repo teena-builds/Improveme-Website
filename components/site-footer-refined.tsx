@@ -33,8 +33,8 @@ export async function SiteFooterRefined() {
   return (
     <>
       <footer className="bg-[#141c2d] text-white">
-        <div className="max-w-none w-full px-4 sm:px-6 lg:px-20 py-10">
-          <div className="grid grid-cols-7 gap-8 md:grid-cols-7 lg:grid-cols-7">
+        <div className="max-w-none w-full px-4 py-10 sm:px-6 lg:px-20">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-7 lg:grid-cols-7">
             <div className="md:col-span-1">
               <Link href="/">
                 <Image src="/ref/logo.png" alt="Improve ME Institute" width={180} height={45} className="h-[44px] w-auto" />
@@ -195,7 +195,7 @@ export async function SiteFooterRefined() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with us on WhatsApp"
-        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
+        className="fixed bottom-4 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] shadow-[0_14px_28px_rgba(0,0,0,0.16)] sm:bottom-6 sm:right-6 sm:h-12 sm:w-12"
       >
         <Image src="/ref/whatsapp-icon-seeklogo.com.svg" alt="WhatsApp" width={24} height={24} />
       </a>
@@ -203,7 +203,7 @@ export async function SiteFooterRefined() {
       <a
         href="#"
         aria-label="Back to top"
-        className="fixed bottom-6 right-[86px] z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#FFC107] text-[20px] font-bold text-[#1c2744] shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
+        className="fixed bottom-4 right-[66px] z-40 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFC107] text-[20px] font-bold text-[#1c2744] shadow-[0_14px_28px_rgba(0,0,0,0.16)] sm:bottom-6 sm:right-[86px] sm:h-12 sm:w-12"
       >
         ^
       </a>

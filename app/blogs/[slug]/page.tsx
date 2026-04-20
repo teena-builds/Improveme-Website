@@ -3,16 +3,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogRichContent } from "@/components/blog/blog-rich-content";
+import { TableOfContents } from "@/components/toc/TableOfContents";
+import { buildTableOfContents } from "@/components/toc/tocUtils";
 import type { BlogPostWithContent } from "@/lib/wordpress";
 import { getAllPosts, getPostBySlug } from "@/lib/wordpress";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
-};
-
-type TocItem = {
-  id: string;
-  text: string;
 };
 
 export const revalidate = 300;
@@ -34,49 +31,6 @@ const trimText = (value: string, maxLength: number) => {
   }
 
   return `${value.slice(0, maxLength).trimEnd()}...`;
-};
-
-const decodeHtmlEntities = (value: string) =>
-  value
-    .replace(/&#(\d+);/g, (_match, decimal) => String.fromCodePoint(Number(decimal)))
-    .replace(/&#x([0-9a-f]+);/gi, (_match, hex) => String.fromCodePoint(parseInt(hex, 16)))
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-
-const stripHtml = (value: string) => decodeHtmlEntities(value).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-
-const slugifyHeading = (value: string) =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-const buildTocAndHtml = (html: string): { tocItems: TocItem[]; updatedHtml: string } => {
-  const tocItems: TocItem[] = [];
-  const idCount = new Map<string, number>();
-
-  const updatedHtml = html.replace(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi, (_match, rawAttributes, content) => {
-    const headingText = stripHtml(content);
-    if (!headingText) {
-      return `<h2${rawAttributes}>${content}</h2>`;
-    }
-
-    const baseId = slugifyHeading(headingText) || "section";
-    const seenCount = idCount.get(baseId) ?? 0;
-    idCount.set(baseId, seenCount + 1);
-    const uniqueId = seenCount === 0 ? baseId : `${baseId}-${seenCount + 1}`;
-
-    tocItems.push({ id: uniqueId, text: headingText });
-    const attributesWithoutId = rawAttributes.replace(/\s+id=(["']).*?\1/gi, "");
-
-    return `<h2${attributesWithoutId} id="${uniqueId}">${content}</h2>`;
-  });
-
-  return { tocItems, updatedHtml };
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -143,7 +97,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const { tocItems, updatedHtml } = buildTocAndHtml(post.content);
+  const { tocItems, updatedHtml } = buildTableOfContents(post.content, { headingSelector: "h2" });
   const latestBlogs = latestPosts.filter((entry) => entry.slug !== post.slug).slice(0, 5);
 
   return (
@@ -164,22 +118,14 @@ export default async function BlogDetailPage({ params }: PageProps) {
               <div className="rounded-[24px] border border-[#d9e0ec] bg-[#f3f4f6] p-4 shadow-[0_14px_30px_rgba(15,23,42,0.08)] md:p-5">
                 <h2 className="text-[20px] font-bold leading-[1.08] tracking-[-0.03em] text-[#1f2937]">Table of Content</h2>
                 <div className="mt-4">
-                  {tocItems.length ? (
-                    <ul className="space-y-2">
-                      {tocItems.map((item) => (
-                        <li key={item.id}>
-                          <a
-                            href={`#${item.id}`}
-                            className="block text-[13px] font-medium leading-[1.4] text-[#374151] transition-colors hover:text-[#1d4d8f]"
-                          >
-                            {item.text}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-[14px] text-[#6b7280]">No sections available for this article.</p>
-                  )}
+                  <TableOfContents
+                    items={tocItems}
+                    offset={140}
+                    emptyState="No sections available for this article."
+                    listClassName="space-y-2"
+                    itemClassName="text-[#374151] hover:text-[#1d4d8f]"
+                    activeItemClassName="bg-[#e9f0fb] text-[#1d4d8f]"
+                  />
                 </div>
               </div>
             </aside>
